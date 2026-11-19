@@ -1,0 +1,11 @@
+storyteller-kit
+Copyright 2026 Kumiho
+
+This product includes software and data developed by Kumiho
+(https://kumiho.io) for 9miho Storyteller.
+
+The baseline model profiles in profiles/ were first extracted from the 9miho
+provider manifests.
+
+"9miho" and "Kumiho" are trademarks of Kumiho and are not licensed under the
+Apache License, Version 2.0.

@@ -1,0 +1,258 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "character_states",
+  "description": "Character state after each named Moment (story-core cognition)",
+  "method": "GET",
+  "path": "/api/projects/{project}/character-states",
+  "query": [
+    "moment_ids",
+    "character_ids"
+  ],
+  "request": null,
+  "response": {
+    "type": "object",
+    "properties": {
+      "revision": {
+        "type": "string"
+      },
+      "items": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "moment_id": {
+              "type": "string"
+            },
+            "states": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/character_state_at"
+              }
+            }
+          },
+          "required": [
+            "moment_id",
+            "states"
+          ],
+          "additionalProperties": false
+        }
+      }
+    },
+    "required": [
+      "revision",
+      "items"
+    ],
+    "additionalProperties": false
+  },
+  "error": {
+    "$ref": "#/$defs/error_body"
+  },
+  "$defs": {
+    "StateDelta": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "default": "",
+          "type": "string"
+        },
+        "character_id": {
+          "default": "",
+          "type": "string"
+        },
+        "dimension": {
+          "default": "psychological",
+          "enum": [
+            "physical",
+            "psychological",
+            "knowledge",
+            "relationship"
+          ],
+          "type": "string"
+        },
+        "before": {
+          "default": "",
+          "type": "string"
+        },
+        "after": {
+          "default": "",
+          "type": "string"
+        },
+        "risk": {
+          "default": "safe",
+          "enum": [
+            "safe",
+            "review"
+          ],
+          "type": "string"
+        },
+        "approved": {
+          "default": false,
+          "type": "boolean"
+        }
+      },
+      "type": "object",
+      "required": [
+        "id",
+        "character_id",
+        "dimension",
+        "before",
+        "after",
+        "risk",
+        "approved"
+      ]
+    },
+    "character_state_at": {
+      "type": "object",
+      "properties": {
+        "characterId": {
+          "type": "string"
+        },
+        "state": {
+          "$ref": "#/$defs/known_state"
+        },
+        "unknown": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "physical",
+              "psychological",
+              "knowledge",
+              "relationships"
+            ]
+          }
+        },
+        "conflicts": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/state_conflict"
+          }
+        },
+        "changes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/StateDelta"
+          }
+        },
+        "pendingChanges": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/StateDelta"
+          }
+        }
+      },
+      "required": [
+        "characterId",
+        "state",
+        "unknown",
+        "conflicts",
+        "changes",
+        "pendingChanges"
+      ],
+      "additionalProperties": false
+    },
+    "error_body": {
+      "type": "object",
+      "properties": {
+        "error": {
+          "type": "object",
+          "properties": {
+            "code": {
+              "type": "string"
+            },
+            "cause": {
+              "type": "string"
+            },
+            "next_step": {
+              "type": "string"
+            },
+            "retryable": {
+              "type": "boolean"
+            },
+            "details": {
+              "type": "object"
+            }
+          },
+          "required": [
+            "code",
+            "cause"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "error"
+      ],
+      "additionalProperties": false,
+      "description": "Every refusal: 401/403 (auth), 404, 409 (changed since read; details.current), 413, 422, 429, 5xx."
+    },
+    "known_state": {
+      "type": "object",
+      "properties": {
+        "physical": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "psychological": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "knowledge": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "relationships": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "required": [
+        "physical",
+        "psychological",
+        "knowledge",
+        "relationships"
+      ],
+      "additionalProperties": false
+    },
+    "state_conflict": {
+      "type": "object",
+      "properties": {
+        "dimension": {
+          "type": "string",
+          "enum": [
+            "physical",
+            "psychological",
+            "knowledge",
+            "relationships"
+          ]
+        },
+        "values": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "momentId": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "required": [
+        "dimension",
+        "values",
+        "momentId"
+      ],
+      "additionalProperties": false
+    }
+  }
+}

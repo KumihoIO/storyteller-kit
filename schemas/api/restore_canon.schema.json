@@ -1,0 +1,143 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "restore_canon",
+  "description": "Person decision: POST /api/projects/{project}/canon/restore",
+  "method": "POST",
+  "path": "/api/projects/{project}/canon/restore",
+  "query": [],
+  "request": {
+    "type": "object",
+    "properties": {
+      "revision_id": {
+        "type": "string"
+      },
+      "expected_revision": {
+        "type": "string"
+      },
+      "scope": {
+        "type": "string",
+        "enum": [
+          "document",
+          "moments"
+        ]
+      },
+      "moment_ids": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      }
+    },
+    "required": [
+      "revision_id",
+      "expected_revision"
+    ],
+    "additionalProperties": false
+  },
+  "response": {
+    "type": "object",
+    "properties": {
+      "ok": {
+        "const": true
+      },
+      "applied": {
+        "const": true
+      },
+      "approval_required": {
+        "type": "boolean"
+      },
+      "draft_seq": {
+        "type": [
+          "integer",
+          "null"
+        ]
+      },
+      "restore_seq": {
+        "type": [
+          "integer",
+          "null"
+        ]
+      },
+      "source_revision": {
+        "type": [
+          "string",
+          "null"
+        ]
+      },
+      "revision_id": {
+        "type": [
+          "string",
+          "null"
+        ]
+      },
+      "rebased": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      },
+      "conflicted": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      },
+      "repeated": {
+        "type": "boolean"
+      }
+    },
+    "required": [
+      "ok",
+      "applied",
+      "approval_required",
+      "draft_seq",
+      "restore_seq",
+      "source_revision",
+      "revision_id",
+      "rebased",
+      "conflicted",
+      "repeated"
+    ],
+    "additionalProperties": false
+  },
+  "error": {
+    "$ref": "#/$defs/error_body"
+  },
+  "$defs": {
+    "error_body": {
+      "type": "object",
+      "properties": {
+        "error": {
+          "type": "object",
+          "properties": {
+            "code": {
+              "type": "string"
+            },
+            "cause": {
+              "type": "string"
+            },
+            "next_step": {
+              "type": "string"
+            },
+            "retryable": {
+              "type": "boolean"
+            },
+            "details": {
+              "type": "object"
+            }
+          },
+          "required": [
+            "code",
+            "cause"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "error"
+      ],
+      "additionalProperties": false,
+      "description": "Every refusal: 401/403 (auth), 404, 409 (changed since read; details.current), 413, 422, 429, 5xx."
+    }
+  }
+}

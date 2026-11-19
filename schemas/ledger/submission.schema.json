@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.9miho.io/storyteller/ledger/v2/submission.schema.json",
+  "title": "Submission",
+  "description": "What the host sends back after generating (or writing, for text): where the result is and what produced it.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["result_ref"],
+  "properties": {
+    "result_ref": { "type": "string", "description": "Result URL or upload id." },
+    "model_used": { "type": "string", "default": "", "description": "The model the host actually used. Empty when unknown." },
+    "profile_id": {
+      "type": "string",
+      "default": "",
+      "description": "The model profile the host says it generated with. Empty when it does not know."
+    },
+    "final_prompt_sha256": {
+      "type": "string",
+      "default": "",
+      "description": "Hash of the prompt the host finally sent, if it reworded the rendered one. Empty when unchanged."
+    }
+  }
+}

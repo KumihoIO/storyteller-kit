@@ -1,0 +1,135 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "draft_impact",
+  "description": "What approving the shared draft at a step would do, against the Canon tip",
+  "method": "GET",
+  "path": "/api/projects/{project}/draft/impact",
+  "query": [
+    "draft_seq"
+  ],
+  "request": null,
+  "response": {
+    "type": "object",
+    "properties": {
+      "draft_seq": {
+        "type": "integer"
+      },
+      "has_changes": {
+        "type": "boolean"
+      },
+      "canon_revision": {
+        "type": [
+          "string",
+          "null"
+        ]
+      },
+      "changed_nodes": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      },
+      "affected_moment_ids": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      },
+      "conflicts": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      },
+      "stale_take_ids": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      },
+      "downstream_take_ids": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      },
+      "stale_text_ids": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      },
+      "sent_back_order_ids": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      },
+      "untouched_take_ids": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      },
+      "production_lagging": {
+        "type": "boolean"
+      }
+    },
+    "required": [
+      "draft_seq",
+      "has_changes",
+      "canon_revision",
+      "changed_nodes",
+      "affected_moment_ids",
+      "conflicts",
+      "stale_take_ids",
+      "downstream_take_ids",
+      "stale_text_ids",
+      "sent_back_order_ids",
+      "untouched_take_ids",
+      "production_lagging"
+    ],
+    "additionalProperties": false,
+    "description": "What approving the shared draft at draft_seq would do against the Canon tip. has_changes false: the draft is the Canon tip already, so an approval would be refused (no_changes)."
+  },
+  "error": {
+    "$ref": "#/$defs/error_body"
+  },
+  "$defs": {
+    "error_body": {
+      "type": "object",
+      "properties": {
+        "error": {
+          "type": "object",
+          "properties": {
+            "code": {
+              "type": "string"
+            },
+            "cause": {
+              "type": "string"
+            },
+            "next_step": {
+              "type": "string"
+            },
+            "retryable": {
+              "type": "boolean"
+            },
+            "details": {
+              "type": "object"
+            }
+          },
+          "required": [
+            "code",
+            "cause"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "error"
+      ],
+      "additionalProperties": false,
+      "description": "Every refusal: 401/403 (auth), 404, 409 (changed since read; details.current), 413, 422, 429, 5xx."
+    }
+  }
+}

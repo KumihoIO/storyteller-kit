@@ -1,0 +1,82 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.9miho.io/storyteller/ledger/v2/render-receipt.schema.json",
+  "title": "Render receipt",
+  "description": "What the server rendered for one work order, signed by the server. A result without a valid receipt is never registered as a take. The signature is HMAC-SHA256 over the RFC 8785 canonical JSON of a fixed, per-version list of fields (see fixtures/ledger/receipts.json); fields outside the version's list are not signed, so a later version can add fields without breaking receipts already signed.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "receipt_id",
+    "tenant_id",
+    "project_id",
+    "order_id",
+    "member",
+    "canon_revision",
+    "direction_kref",
+    "prompt_sha256",
+    "profile_id",
+    "profile_version",
+    "render_contract_version",
+    "issued_at",
+    "expires_at"
+  ],
+  "properties": {
+    "version": {
+      "type": "integer",
+      "minimum": 1,
+      "default": 1,
+      "description": "The receipt's own version; it selects the signed field list. Only version 1 can be signed or verified today. Any integer from 1 parses; an unknown version fails verification with receipt_invalid, not parsing."
+    },
+    "receipt_id": { "type": "string" },
+    "tenant_id": { "type": "string", "description": "Signed. Binds the receipt to one tenant." },
+    "project_id": { "type": "string", "description": "Signed. Binds the receipt to one project." },
+    "order_id": { "type": "string", "description": "The work order the render was made for." },
+    "member": { "type": "string", "description": "The assignee the receipt was issued to." },
+    "canon_revision": { "type": "string", "description": "The approved Canon revision the prompt was rendered against." },
+    "direction_kref": { "type": "string", "description": "Reference of the Direction artifact that was rendered." },
+    "references": {
+      "type": "array",
+      "default": [],
+      "description": "The references wired into the render, in slot order.",
+      "items": { "$ref": "#/$defs/reference" }
+    },
+    "prompt_sha256": {
+      "type": "string",
+      "description": "Hash of the rendered prompt. Written as the server defines it (the fixtures use a 'sha256:' prefix); the schema does not constrain the form."
+    },
+    "profile_id": { "type": "string", "description": "The model profile the prompt was rendered for." },
+    "profile_version": { "type": "string", "description": "The version of that profile. A string, not a number." },
+    "render_contract_version": { "type": "integer", "minimum": 1, "description": "Version of the render contract the prompt follows." },
+    "issued_at": {
+      "type": "integer",
+      "description": "Epoch seconds. Must lie within the I-JSON integer range (+-2^53) for the receipt to be signable."
+    },
+    "expires_at": { "type": "integer", "description": "Epoch seconds; the latest moment the result may be submitted against this receipt." },
+    "key_id": { "type": "string", "default": "", "description": "Id of the signing key. Empty on an unsigned receipt." },
+    "signature": {
+      "type": "string",
+      "default": "",
+      "description": "'hmac-sha256:' followed by 64 lowercase hex digits. Empty on an unsigned receipt. The form is checked when the signature is verified, not when the document is parsed, so it is not a pattern here."
+    }
+  },
+  "$comment": "Not expressible: a reference of kind take must name its take_id and one of kind asset must not (checked when the receipt is attached to an order, error receipt_invalid); issued_at <= expires_at is not checked by the code either.",
+  "$defs": {
+    "reference": {
+      "title": "Receipt reference",
+      "description": "One reference wired into the render.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["slot", "kind", "kref"],
+      "properties": {
+        "slot": { "type": "string", "description": "The slot the reference occupies in the model's addressing scheme." },
+        "kind": { "$ref": "defs.schema.json#/$defs/reference_kind" },
+        "kref": { "type": "string", "description": "Reference of the take revision or asset." },
+        "take_id": {
+          "type": ["string", "null"],
+          "default": null,
+          "description": "Required for kind take, null for kind asset (enforced when the receipt is attached)."
+        }
+      }
+    }
+  }
+}

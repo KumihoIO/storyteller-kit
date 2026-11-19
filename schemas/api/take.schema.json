@@ -1,0 +1,284 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "take",
+  "description": "One take",
+  "method": "GET",
+  "path": "/api/projects/{project}/takes/{take}",
+  "query": [],
+  "request": null,
+  "response": {
+    "$ref": "#/$defs/take"
+  },
+  "error": {
+    "$ref": "#/$defs/error_body"
+  },
+  "$defs": {
+    "adoption": {
+      "description": "Whether a take is the Moment's current cut and who decided it.",
+      "type": "string",
+      "enum": [
+        "provisional",
+        "pending_review",
+        "confirmed",
+        "rejected",
+        "candidate"
+      ]
+    },
+    "error_body": {
+      "type": "object",
+      "properties": {
+        "error": {
+          "type": "object",
+          "properties": {
+            "code": {
+              "type": "string"
+            },
+            "cause": {
+              "type": "string"
+            },
+            "next_step": {
+              "type": "string"
+            },
+            "retryable": {
+              "type": "boolean"
+            },
+            "details": {
+              "type": "object"
+            }
+          },
+          "required": [
+            "code",
+            "cause"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "error"
+      ],
+      "additionalProperties": false,
+      "description": "Every refusal: 401/403 (auth), 404, 409 (changed since read; details.current), 413, 422, 429, 5xx."
+    },
+    "medium": {
+      "description": "What one work order produces. The medium decides the default lease length.",
+      "type": "string",
+      "enum": [
+        "panel_image",
+        "shot_video",
+        "dialogue_audio",
+        "text"
+      ]
+    },
+    "self_check": {
+      "description": "The host's own verdict on a generated result (character invariants, costume, place), sent when it registers the result.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "passed",
+        "notes"
+      ],
+      "properties": {
+        "passed": {
+          "type": "boolean",
+          "description": "True when every checklist item held."
+        },
+        "notes": {
+          "type": "string",
+          "default": "",
+          "description": "Per-item verdicts and reasons, free text."
+        }
+      }
+    },
+    "take": {
+      "description": "One registered result for a work order: where it is, what made it, how it was checked and whether a person has adopted it.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "version",
+        "seq",
+        "tenant_id",
+        "take_id",
+        "order_id",
+        "project_id",
+        "moment_id",
+        "scope_id",
+        "sequence",
+        "medium",
+        "member",
+        "profile_id",
+        "canon_revision",
+        "contention_group",
+        "receipt_id",
+        "result_ref",
+        "model_used",
+        "profile_mismatch",
+        "rendered_prompt_sha256",
+        "final_prompt_sha256",
+        "self_check",
+        "adoption",
+        "adoption_reasons",
+        "human_reviewed",
+        "confirmed_by_policy",
+        "reviewed_by",
+        "reference_take_ids",
+        "unreviewed_references",
+        "reconnect_moment_ids",
+        "depends_on",
+        "stale",
+        "superseded",
+        "created_at"
+      ],
+      "properties": {
+        "version": {
+          "type": "integer",
+          "minimum": 1,
+          "default": 2,
+          "description": "Ledger record version; 2 today. Any integer from 1 parses."
+        },
+        "seq": {
+          "type": "integer",
+          "default": 0,
+          "description": "Bumped by every state change."
+        },
+        "tenant_id": {
+          "type": "string"
+        },
+        "take_id": {
+          "type": "string"
+        },
+        "order_id": {
+          "type": "string"
+        },
+        "project_id": {
+          "type": "string"
+        },
+        "moment_id": {
+          "type": "string"
+        },
+        "scope_id": {
+          "type": "string"
+        },
+        "sequence": {
+          "type": "integer"
+        },
+        "medium": {
+          "$ref": "#/$defs/medium"
+        },
+        "member": {
+          "type": "string"
+        },
+        "profile_id": {
+          "type": "string"
+        },
+        "canon_revision": {
+          "type": "string"
+        },
+        "contention_group": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "default": null
+        },
+        "receipt_id": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "default": null
+        },
+        "result_ref": {
+          "type": "string"
+        },
+        "model_used": {
+          "type": "string",
+          "default": ""
+        },
+        "profile_mismatch": {
+          "type": "boolean",
+          "default": false,
+          "description": "The host reported a profile other than the one the receipt rendered for."
+        },
+        "rendered_prompt_sha256": {
+          "type": "string",
+          "default": ""
+        },
+        "final_prompt_sha256": {
+          "type": "string",
+          "default": ""
+        },
+        "self_check": {
+          "$ref": "#/$defs/self_check"
+        },
+        "adoption": {
+          "$ref": "#/$defs/adoption"
+        },
+        "adoption_reasons": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": [],
+          "description": "Stable reason codes for the adoption decision."
+        },
+        "human_reviewed": {
+          "type": "boolean",
+          "default": false,
+          "description": "True only when a person approved it. A rejection or a policy confirmation leaves it false."
+        },
+        "confirmed_by_policy": {
+          "type": "boolean",
+          "default": false
+        },
+        "reviewed_by": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "default": null
+        },
+        "reference_take_ids": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": []
+        },
+        "unreviewed_references": {
+          "type": "boolean",
+          "default": false,
+          "description": "Some reference was a take no person had approved when this one was registered."
+        },
+        "reconnect_moment_ids": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": [],
+          "description": "Neighbouring Moments this take should have leaned on but had no usable take for."
+        },
+        "depends_on": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "uniqueItems": true,
+          "default": [],
+          "description": "story-core node keys (bare kind/id, e.g. character/rhea) this take leans on. Opaque to the ledger: compared as strings with changed_domains. No entry repeats."
+        },
+        "stale": {
+          "type": "boolean",
+          "default": false
+        },
+        "superseded": {
+          "type": "boolean",
+          "default": false,
+          "description": "A director asked for the cut to be made again. It stays as history but is no longer the Moment's current cut."
+        },
+        "created_at": {
+          "type": "integer"
+        }
+      }
+    }
+  }
+}

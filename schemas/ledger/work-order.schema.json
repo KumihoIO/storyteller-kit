@@ -1,0 +1,100 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.9miho.io/storyteller/ledger/v2/work-order.schema.json",
+  "title": "Work order",
+  "description": "One unit of work: making one medium of one Moment. The document is a record; every state change produces a new copy with a higher seq. Times are integer epoch seconds supplied by the caller.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "tenant_id",
+    "project_id",
+    "order_id",
+    "moment_id",
+    "scope_id",
+    "sequence",
+    "medium",
+    "canon_revision",
+    "issued_at",
+    "updated_at",
+    "lease_seconds"
+  ],
+  "properties": {
+    "version": { "type": "integer", "minimum": 1, "default": 2, "description": "Ledger record version; 2 today. Any integer from 1 parses, so older stored records stay readable." },
+    "seq": { "type": "integer", "default": 0, "description": "Bumped by every state change. The storage layer compares and swaps on it." },
+    "tenant_id": { "type": "string" },
+    "project_id": { "type": "string" },
+    "order_id": { "type": "string", "description": "Also the idempotency key: registering the same result twice yields one take." },
+    "moment_id": { "type": "string" },
+    "scope_id": { "type": "string", "description": "The scene the Moment belongs to. A take awaiting a person holds later orders of the same scope only." },
+    "sequence": { "type": "integer", "description": "The Moment's place in production order. Reissues keep it." },
+    "medium": { "$ref": "defs.schema.json#/$defs/medium" },
+    "canon_revision": { "type": "string", "description": "The approved Canon revision the order is pinned to." },
+    "depends_on": {
+      "type": "array",
+      "items": { "type": "string" },
+      "uniqueItems": true,
+      "default": [],
+      "description": "story-core node keys (story_revision_domains, bare kind/id, e.g. character/rhea) this Moment's work leans on, the union over the narrative and production domains. Opaque to the ledger: compared as strings with changed_domains. No entry repeats."
+    },
+    "state": { "$ref": "defs.schema.json#/$defs/order_state", "default": "issued" },
+    "issued_at": { "type": "integer" },
+    "updated_at": { "type": "integer" },
+    "lease_seconds": { "type": "integer", "exclusiveMinimum": 0, "description": "Length of the lease in seconds." },
+    "assignee": { "type": ["string", "null"], "default": null, "description": "The member the order is bound to; null while unclaimed." },
+    "lease_expires_at": {
+      "type": ["integer", "null"],
+      "default": null,
+      "description": "Epoch seconds the lease ends; null while unclaimed or once the work is done."
+    },
+    "anchor": { "type": "boolean", "default": false, "description": "A cut later cuts lean on (first appearance, new costume, new location)." },
+    "policy": {
+      "oneOf": [{ "$ref": "defs.schema.json#/$defs/review_policy" }, { "type": "null" }],
+      "default": null,
+      "description": "Per-Moment override of the project's review policy; null means follow the project."
+    },
+    "contention_group": { "type": ["string", "null"], "default": null, "description": "Orders in one group are deliberate overlaps on the same Moment and medium." },
+    "participant": { "type": ["string", "null"], "default": null, "description": "In a contention group: the one member this order is for." },
+    "profile_id": {
+      "type": ["string", "null"],
+      "default": null,
+      "description": "In a contention group: the model profile this order is for, when fixed. On a winner's remake: the profile that won, as a hint."
+    },
+    "after_order_ids": {
+      "type": "array",
+      "items": { "type": "string" },
+      "default": [],
+      "description": "Anchor orders this one waits on until a person approves their take. Followed through reissues by successor_id."
+    },
+    "reissued_from": { "type": ["string", "null"], "default": null, "description": "The order this one replaced." },
+    "successor_id": { "type": ["string", "null"], "default": null, "description": "The order that replaced this one." },
+    "revision_notes": { "type": ["string", "null"], "default": null, "description": "The reviewer's notes a remake must address." },
+    "direction_kref": { "type": ["string", "null"], "default": null },
+    "direction_revisions": {
+      "type": "array",
+      "items": { "type": "string" },
+      "default": [],
+      "description": "Canon revisions the current direction and receipt are valid for. A Canon change that misses depends_on extends this instead of voiding the work."
+    },
+    "receipt": {
+      "oneOf": [{ "$ref": "render-receipt.schema.json" }, { "type": "null" }],
+      "default": null
+    },
+    "submission": {
+      "oneOf": [{ "$ref": "submission.schema.json" }, { "type": "null" }],
+      "default": null
+    },
+    "take_id": { "type": ["string", "null"], "default": null },
+    "closed_by": {
+      "type": ["string", "null"],
+      "default": null,
+      "description": "The person who approved, rejected, withdrew or superseded. A policy confirmation leaves it null and sets confirmed_by_policy."
+    },
+    "confirmed_by_policy": { "type": "boolean", "default": false },
+    "close_reason": {
+      "oneOf": [{ "$ref": "defs.schema.json#/$defs/close_reason" }, { "type": "null" }],
+      "default": null
+    },
+    "review_notes": { "type": ["string", "null"], "default": null }
+  },
+  "$comment": "Not expressible: which fields must be set in which state (assignee and lease_expires_at while working, take_id once recorded, close_reason once closed) is enforced by the transition functions, not by parsing. For every nullable field an absent key and a null mean the same; writers should still emit every field."
+}

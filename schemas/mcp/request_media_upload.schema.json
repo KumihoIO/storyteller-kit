@@ -1,0 +1,122 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "request_media_upload",
+  "description": "The request_media_upload tool contract of 9miho-storyteller's MCP server (generated).",
+  "profiles": [
+    "granular",
+    "guided"
+  ],
+  "annotations": {
+    "readOnlyHint": false,
+    "destructiveHint": false,
+    "idempotentHint": true,
+    "openWorldHint": false
+  },
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "project_id": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 200,
+        "pattern": "^[^\\u0000-\\u001f]+$"
+      },
+      "idempotency_key": {
+        "type": "string",
+        "minLength": 8,
+        "maxLength": 128,
+        "pattern": "^[A-Za-z0-9._:-]+$",
+        "description": "A fresh UUID per new action; reuse only to retry the same call."
+      },
+      "content_type": {
+        "type": "string",
+        "enum": [
+          "audio/flac",
+          "audio/mp4",
+          "audio/mpeg",
+          "audio/ogg",
+          "audio/wav",
+          "image/gif",
+          "image/jpeg",
+          "image/png",
+          "image/webp",
+          "video/mp4",
+          "video/quicktime",
+          "video/webm"
+        ],
+        "description": "The file's type."
+      },
+      "size_bytes": {
+        "type": "integer",
+        "minimum": 1,
+        "description": "The file's exact size."
+      },
+      "sha256": {
+        "type": "string",
+        "pattern": "^[0-9a-f]{64}$",
+        "description": "Lowercase hex."
+      },
+      "order_id": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 200,
+        "pattern": "^[^\\u0000-\\u001f]+$",
+        "description": "The order the file is a result for, if known."
+      }
+    },
+    "required": [
+      "project_id",
+      "idempotency_key",
+      "content_type",
+      "size_bytes"
+    ],
+    "additionalProperties": false
+  },
+  "outputSchema": {
+    "type": "object",
+    "properties": {
+      "project_id": {
+        "type": "string"
+      },
+      "upload_id": {
+        "type": "string"
+      },
+      "method": {
+        "type": "string"
+      },
+      "url": {
+        "type": "string"
+      },
+      "headers": {
+        "type": "object",
+        "additionalProperties": {
+          "type": "string"
+        }
+      },
+      "expires_at": {
+        "type": "integer"
+      },
+      "content_type": {
+        "type": "string"
+      },
+      "size_bytes": {
+        "type": "integer"
+      },
+      "next_steps": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      }
+    },
+    "required": [
+      "upload_id",
+      "method",
+      "url",
+      "headers",
+      "expires_at",
+      "next_steps"
+    ],
+    "additionalProperties": false
+  }
+}

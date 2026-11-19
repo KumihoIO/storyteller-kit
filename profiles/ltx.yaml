@@ -1,0 +1,63 @@
+# Model profiles for provider family 'ltx'.
+# Baseline profiles, first extracted from the 9miho provider manifests.
+# Raise `version` with any edit that can change a rendered prompt (schemas/README.md).
+provider: ltx
+profiles:
+  - id: ltx.image_to_video
+    version: 1
+    label: "LTX-2.3 · ComfyUI"
+    model: ltx-2.3
+    aliases: []
+    dialect: ltx_reference_sheet
+    identity_from_reference: false
+    timed: true
+    max_chars: null
+    inputs:
+      - {name: image, type: image, role: first_frame, min_count: 1, max_count: 1, ordered: false}
+    mention_refs: []
+  - id: ltx.reference_to_video
+    version: 1
+    label: "LTX-2.3 · ComfyUI"
+    model: ltx-2.3
+    aliases: []
+    dialect: ltx_reference_sheet
+    identity_from_reference: false
+    timed: true
+    max_chars: null
+    inputs:
+      - {name: refs, type: image, role: reference_image, min_count: 1, max_count: 6, ordered: false}
+    mention_refs: []
+  - id: ltx.text_to_video
+    version: 1
+    label: "LTX-2.3 · ComfyUI"
+    model: ltx-2.3
+    aliases: []
+    dialect: ltx_reference_sheet
+    identity_from_reference: false
+    timed: true
+    max_chars: null
+    inputs: []
+    mention_refs: []
+  - id: ltx_2_5.image_to_video
+    version: 1
+    label: "LTX-2.5 · ComfyUI"
+    model: ltx-2.5
+    aliases: []
+    dialect: ltx_reference_sheet
+    identity_from_reference: false
+    timed: true
+    max_chars: null
+    inputs:
+      - {name: image, type: image, role: first_frame, min_count: 1, max_count: 1, ordered: false}
+    mention_refs: []
+  - id: ltx_2_5.text_to_video
+    version: 1
+    label: "LTX-2.5 · ComfyUI"
+    model: ltx-2.5
+    aliases: []
+    dialect: ltx_reference_sheet
+    identity_from_reference: false
+    timed: true
+    max_chars: null
+    inputs: []
+    mention_refs: []

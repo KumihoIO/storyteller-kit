@@ -1,0 +1,77 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.9miho.io/storyteller/ledger/v2/defs.schema.json",
+  "title": "Ledger shared definitions",
+  "description": "Enumerations shared by the ledger documents. Every value is a lowercase snake_case string. A reader must refuse a value it does not know; a writer must never invent one.",
+  "$defs": {
+    "order_state": {
+      "title": "Work order state",
+      "description": "Where a work order is in its life. issued, directed, rendered and submitted are working states (the assignee owes work and a lease can expire); approved, rejected and abandoned are terminal.",
+      "type": "string",
+      "enum": ["issued", "directed", "rendered", "submitted", "recorded", "approved", "rejected", "abandoned"]
+    },
+    "medium": {
+      "title": "Medium",
+      "description": "What one work order produces. The medium decides the default lease length.",
+      "type": "string",
+      "enum": ["panel_image", "shot_video", "dialogue_audio", "text"]
+    },
+    "review_policy": {
+      "title": "Review policy",
+      "description": "How much a person reviews. A work order may override the project's policy.",
+      "type": "string",
+      "enum": ["exceptions_only", "follow", "blocking"]
+    },
+    "story_role": {
+      "title": "Story role",
+      "description": "A member's role in a story project.",
+      "type": "string",
+      "enum": ["writer", "director", "producer", "reviewer", "viewer"]
+    },
+    "adoption": {
+      "title": "Take adoption",
+      "description": "Whether a take is the Moment's current cut and who decided it.",
+      "type": "string",
+      "enum": ["provisional", "pending_review", "confirmed", "rejected", "candidate"]
+    },
+    "close_reason": {
+      "title": "Close reason",
+      "description": "Why an order stopped or was replaced. A stable code, never free text.",
+      "type": "string",
+      "enum": ["rejected", "lease_expired", "released", "withdrawn", "stale", "superseded", "not_picked"]
+    },
+    "host_action": {
+      "title": "Host action",
+      "description": "What story_step tells the host to do next. repin is addressed to the server, never to the host.",
+      "type": "string",
+      "enum": [
+        "author_direction",
+        "author_text",
+        "generate",
+        "self_check",
+        "register_or_release",
+        "await_review",
+        "repin",
+        "done"
+      ]
+    },
+    "step_reason": {
+      "title": "Step reason",
+      "description": "Why a step is what it is when the action alone does not say.",
+      "type": "string",
+      "enum": ["needs_repin", "held_by_production", "held_by_unlisted"]
+    },
+    "hold_kind": {
+      "title": "Hold kind",
+      "description": "What an order that cannot start yet is waiting on: a person's review, work still to be made, or an order missing from the listing.",
+      "type": "string",
+      "enum": ["review", "production", "unlisted"]
+    },
+    "reference_kind": {
+      "title": "Receipt reference kind",
+      "description": "What a receipt reference points at: a take made in this ledger (it must name its take_id) or a registered asset approved outside the ledger (it must not).",
+      "type": "string",
+      "enum": ["take", "asset"]
+    }
+  }
+}

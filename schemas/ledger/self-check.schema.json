@@ -1,0 +1,13 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.9miho.io/storyteller/ledger/v2/self-check.schema.json",
+  "title": "Self check",
+  "description": "The host's own verdict on a generated result (character invariants, costume, place), sent when it registers the result.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["passed"],
+  "properties": {
+    "passed": { "type": "boolean", "description": "True when every checklist item held." },
+    "notes": { "type": "string", "default": "", "description": "Per-item verdicts and reasons, free text." }
+  }
+}

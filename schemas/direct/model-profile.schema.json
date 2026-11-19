@@ -1,0 +1,176 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.9miho.io/storyteller/direct/v1/model-profile.schema.json",
+  "title": "Model profile",
+  "description": "What the prompt renderer must know about one target model in one mode: which dialect it speaks, whether its references already carry identity, what prompt ceiling it enforces, and how its reference inputs are numbered. One model has several profiles, one per mode, because the mode decides the input ports. The document is plain data; adding a model is adding a profile. Profiles ship as YAML files of the form {provider, profiles: [...]}: each file entry is this document without its provider, which the file supplies (see $defs.profile_file). This schema describes the data model, so a profile may be written as YAML or JSON.",
+  "type": "object",
+  "required": ["provider"],
+  "properties": {
+    "provider": { "type": "string", "description": "Vendor or adapter family the model belongs to (seedance, minimax_h3)." }
+  },
+  "allOf": [{ "$ref": "#/$defs/profile_fields" }],
+  "unevaluatedProperties": false,
+  "$comment": "Not expressible: input port names must be unique within a profile; at most one input has role first_frame and at most one last_frame; every port a mention rule names must be one of the profile's declared inputs; profile ids must be unique across the shipped set (all are checked when profiles are loaded). A profile is identified by id and version together: a render receipt records the id as profile_id and the version, written as decimal digits, as profile_version, and both come from the profile that rendered the prompt. Raise version by one whenever an edit can change a rendered prompt or a limit (see schemas/README.md).",
+  "$defs": {
+    "profile_fields": {
+      "title": "Model profile fields",
+      "description": "Every field of a profile except provider.",
+      "type": "object",
+      "required": ["id", "version", "label", "model", "dialect"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[^.]+\\..+$",
+          "description": "Stable id, <family>.<mode> (seedance.reference_to_video): at least one character before and after the first dot."
+        },
+        "version": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Revision of this profile, 1 for a first release. Raised by one whenever an edit can change the rendered prompt or a limit: dialect, identity_from_reference, timed, max_chars, the order or type of inputs, mention_refs. Not raised for label, aliases or a doc-only edit. Receipts record it, so a stored take names the exact profile it was rendered with."
+        },
+        "label": { "type": "string", "description": "Human label for pickers and logs. Not read by the renderer." },
+        "model": { "type": "string", "description": "Primary model name (seedance-2.0). A lookup key, not read by the renderer." },
+        "aliases": {
+          "type": "array",
+          "items": { "type": "string" },
+          "default": [],
+          "description": "Other model names that select this same profile. Matched case-insensitively and exactly, never by prefix."
+        },
+        "dialect": {
+          "type": "string",
+          "enum": [
+            "cinematic_prose",
+            "image_prose",
+            "change_preserve",
+            "ltx_reference_sheet",
+            "minimax_h3_keyed",
+            "minimax_h3_sage_sol_keyed",
+            "seedance_sectioned",
+            "shot_list_prose"
+          ],
+          "description": "The prompt language. The set is closed: a new dialect is a deliberate code change and a new enum value here."
+        },
+        "identity_from_reference": {
+          "type": "boolean",
+          "default": false,
+          "description": "Drop unlocked cast anchors because the wired references carry appearance."
+        },
+        "timed": {
+          "type": "boolean",
+          "default": false,
+          "description": "True when the model has a clip-length axis. When false the caller's duration is ignored and the prompt narrates ordinally instead of stamping timecodes."
+        },
+        "max_chars": {
+          "type": ["integer", "null"],
+          "exclusiveMinimum": 0,
+          "default": null,
+          "description": "Prompt ceiling in characters, or null when the model declares none."
+        },
+        "inputs": {
+          "type": "array",
+          "default": [],
+          "items": { "$ref": "#/$defs/port" },
+          "description": "The media ports only, in declaration order. Reference slots are numbered by this order, so reordering ports changes prompts. Each port also states what it takes (role, min_count, max_count, ordered, guidance) for the host's reference assignment."
+        },
+        "mention_refs": {
+          "type": "array",
+          "default": [],
+          "items": { "$ref": "#/$defs/mention_rule" },
+          "description": "Positional addressing the model parses (@Image1, <Picture 1>). Empty means no positional syntax: the renderer writes 'the second reference'."
+        }
+      }
+    },
+    "port": {
+      "title": "Profile port",
+      "description": "One media input port. name and type are what the renderer reads. role, min_count, max_count, ordered and guidance say which references a host may wire here; the renderer ignores them, so they never change a prompt.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "type"],
+      "properties": {
+        "name": { "type": "string", "description": "Port name, unique within the profile." },
+        "type": { "type": "string", "enum": ["image", "video", "audio"], "description": "The media type the port accepts." },
+        "role": {
+          "type": "string",
+          "enum": ["generic", "first_frame", "last_frame", "reference_image", "reference_video", "reference_audio"],
+          "default": "generic",
+          "description": "What the port is for, in the provider manifests' own terms: first_frame and last_frame (the clip's opening and closing image), reference_image, reference_video and reference_audio (assets that steer the clip without being part of it). generic means the source does not say what the port is for (a clip to continue, a flat list of keyframes): a host wires nothing there on its own authority. No source separates identity from style, so there is no such role."
+        },
+        "min_count": {
+          "type": "integer",
+          "minimum": 0,
+          "default": 0,
+          "description": "Fewest assets the model needs on this port; 0 when the port is optional."
+        },
+        "max_count": {
+          "type": ["integer", "null"],
+          "minimum": 1,
+          "default": null,
+          "description": "Most assets the model accepts on this port, or null when the profile declares no maximum. Never exceeded by a host."
+        },
+        "ordered": {
+          "type": "boolean",
+          "default": false,
+          "description": "True when the model addresses this port's assets by their position (@Image1, <Picture 2>), so the order they are wired in is part of the prompt. Every port a mention rule names is ordered; see $comment."
+        },
+        "guidance": {
+          "type": "array",
+          "items": { "type": "string", "enum": ["camera_motion"] },
+          "default": [],
+          "description": "Extra uses of an asset on this port besides its role. camera_motion: a reference video that may carry the camera move."
+        }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "role": { "enum": ["first_frame", "last_frame", "reference_image"] } }, "required": ["role"] },
+          "then": { "properties": { "type": { "const": "image" } } }
+        },
+        {
+          "if": { "properties": { "role": { "const": "reference_video" } }, "required": ["role"] },
+          "then": { "properties": { "type": { "const": "video" } } }
+        },
+        {
+          "if": { "properties": { "role": { "const": "reference_audio" } }, "required": ["role"] },
+          "then": { "properties": { "type": { "const": "audio" } } }
+        },
+        {
+          "if": { "properties": { "guidance": { "minItems": 1 } }, "required": ["guidance"] },
+          "then": { "properties": { "type": { "const": "video" } } }
+        }
+      ],
+      "$comment": "Not expressible: min_count does not exceed max_count. The role, type and guidance pairings above are expressed (a frame or reference_image port is an image port, reference_video a video port, reference_audio an audio port, guidance only on a video port). At most one input has role first_frame and at most one last_frame (checked across the profile's inputs). Every port a mention rule names has ordered true; the shipped profiles are tested for it."
+    },
+    "mention_rule": {
+      "title": "Mention rule",
+      "description": "Positional addressing: the label plus a running number across the ports, counted in the order given, 1-based, over wired inputs only.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["label", "ports"],
+      "properties": {
+        "label": { "type": "string", "pattern": "\\S", "description": "The word the model expects before the number (Image, Picture). Not blank." },
+        "ports": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "string" },
+          "description": "Names of declared inputs."
+        }
+      }
+    },
+    "profile_file": {
+      "title": "Model profile file",
+      "description": "The shipped file form: one provider and its profiles, each entry a profile without its provider.",
+      "type": "object",
+      "required": ["provider", "profiles"],
+      "additionalProperties": false,
+      "properties": {
+        "provider": { "type": "string" },
+        "profiles": {
+          "type": "array",
+          "items": {
+            "allOf": [{ "$ref": "#/$defs/profile_fields" }],
+            "unevaluatedProperties": false
+          }
+        }
+      }
+    }
+  }
+}

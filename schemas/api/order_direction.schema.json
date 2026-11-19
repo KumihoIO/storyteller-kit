@@ -1,0 +1,636 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "order_direction",
+  "description": "The Direction stored for an order, its findings, and whether the caller may send a new one",
+  "method": "GET",
+  "path": "/api/projects/{project}/orders/{order}/direction",
+  "query": [],
+  "request": null,
+  "response": {
+    "type": "object",
+    "properties": {
+      "order": {
+        "$ref": "#/$defs/work_order"
+      },
+      "direction_kref": {
+        "type": [
+          "string",
+          "null"
+        ]
+      },
+      "direction": {
+        "anyOf": [
+          {
+            "type": "object",
+            "additionalProperties": true
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "stored": {
+        "type": "boolean"
+      },
+      "lint": {
+        "type": "array",
+        "items": {
+          "$ref": "#/$defs/direction_finding"
+        }
+      },
+      "may_edit": {
+        "type": "boolean"
+      },
+      "edit_refusal": {
+        "anyOf": [
+          {
+            "type": "string",
+            "enum": [
+              "text_order",
+              "state",
+              "unassigned",
+              "not_holder",
+              "not_producer",
+              "lease_expired"
+            ]
+          },
+          {
+            "type": "null"
+          }
+        ]
+      }
+    },
+    "required": [
+      "order",
+      "direction_kref",
+      "direction",
+      "stored",
+      "lint",
+      "may_edit",
+      "edit_refusal"
+    ],
+    "additionalProperties": false,
+    "description": "The order's stored Direction (story-direct's document) and its findings. Only the member who holds the order with a live lease may send a new one; edit_refusal says why not otherwise."
+  },
+  "error": {
+    "$ref": "#/$defs/error_body"
+  },
+  "$defs": {
+    "close_reason": {
+      "description": "Why an order stopped or was replaced. A stable code, never free text.",
+      "type": "string",
+      "enum": [
+        "rejected",
+        "lease_expired",
+        "released",
+        "withdrawn",
+        "stale",
+        "superseded",
+        "not_picked"
+      ]
+    },
+    "direction_finding": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "string"
+        },
+        "severity": {
+          "type": "string"
+        },
+        "path": {
+          "type": "string"
+        },
+        "message": {
+          "type": "string"
+        },
+        "suggestion": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "code",
+        "severity",
+        "path",
+        "message",
+        "suggestion"
+      ],
+      "additionalProperties": true,
+      "description": "A finding on a Direction: story-direct's model-free lint or a Canon cross-check. Warnings."
+    },
+    "error_body": {
+      "type": "object",
+      "properties": {
+        "error": {
+          "type": "object",
+          "properties": {
+            "code": {
+              "type": "string"
+            },
+            "cause": {
+              "type": "string"
+            },
+            "next_step": {
+              "type": "string"
+            },
+            "retryable": {
+              "type": "boolean"
+            },
+            "details": {
+              "type": "object"
+            }
+          },
+          "required": [
+            "code",
+            "cause"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "error"
+      ],
+      "additionalProperties": false,
+      "description": "Every refusal: 401/403 (auth), 404, 409 (changed since read; details.current), 413, 422, 429, 5xx."
+    },
+    "medium": {
+      "description": "What one work order produces. The medium decides the default lease length.",
+      "type": "string",
+      "enum": [
+        "panel_image",
+        "shot_video",
+        "dialogue_audio",
+        "text"
+      ]
+    },
+    "order_state": {
+      "description": "Where a work order is in its life. issued, directed, rendered and submitted are working states (the assignee owes work and a lease can expire); approved, rejected and abandoned are terminal.",
+      "type": "string",
+      "enum": [
+        "issued",
+        "directed",
+        "rendered",
+        "submitted",
+        "recorded",
+        "approved",
+        "rejected",
+        "abandoned"
+      ]
+    },
+    "reference_kind": {
+      "description": "What a receipt reference points at: a take made in this ledger (it must name its take_id) or a registered asset approved outside the ledger (it must not).",
+      "type": "string",
+      "enum": [
+        "take",
+        "asset"
+      ]
+    },
+    "render_receipt": {
+      "description": "What the server rendered for one work order, signed by the server. A result without a valid receipt is never registered as a take. The signature is HMAC-SHA256 over the RFC 8785 canonical JSON of a fixed, per-version list of fields (see fixtures/ledger/receipts.json); fields outside the version's list are not signed, so a later version can add fields without breaking receipts already signed.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "version",
+        "receipt_id",
+        "tenant_id",
+        "project_id",
+        "order_id",
+        "member",
+        "canon_revision",
+        "direction_kref",
+        "references",
+        "prompt_sha256",
+        "profile_id",
+        "profile_version",
+        "render_contract_version",
+        "issued_at",
+        "expires_at",
+        "key_id",
+        "signature"
+      ],
+      "properties": {
+        "version": {
+          "type": "integer",
+          "minimum": 1,
+          "default": 1,
+          "description": "The receipt's own version; it selects the signed field list. Only version 1 can be signed or verified today. Any integer from 1 parses; an unknown version fails verification with receipt_invalid, not parsing."
+        },
+        "receipt_id": {
+          "type": "string"
+        },
+        "tenant_id": {
+          "type": "string",
+          "description": "Signed. Binds the receipt to one tenant."
+        },
+        "project_id": {
+          "type": "string",
+          "description": "Signed. Binds the receipt to one project."
+        },
+        "order_id": {
+          "type": "string",
+          "description": "The work order the render was made for."
+        },
+        "member": {
+          "type": "string",
+          "description": "The assignee the receipt was issued to."
+        },
+        "canon_revision": {
+          "type": "string",
+          "description": "The approved Canon revision the prompt was rendered against."
+        },
+        "direction_kref": {
+          "type": "string",
+          "description": "Reference of the Direction artifact that was rendered."
+        },
+        "references": {
+          "type": "array",
+          "default": [],
+          "description": "The references wired into the render, in slot order.",
+          "items": {
+            "$ref": "#/$defs/render_receipt_reference"
+          }
+        },
+        "prompt_sha256": {
+          "type": "string",
+          "description": "Hash of the rendered prompt. Written as the server defines it (the fixtures use a 'sha256:' prefix); the schema does not constrain the form."
+        },
+        "profile_id": {
+          "type": "string",
+          "description": "The model profile the prompt was rendered for."
+        },
+        "profile_version": {
+          "type": "string",
+          "description": "The version of that profile. A string, not a number."
+        },
+        "render_contract_version": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Version of the render contract the prompt follows."
+        },
+        "issued_at": {
+          "type": "integer",
+          "description": "Epoch seconds. Must lie within the I-JSON integer range (+-2^53) for the receipt to be signable."
+        },
+        "expires_at": {
+          "type": "integer",
+          "description": "Epoch seconds; the latest moment the result may be submitted against this receipt."
+        },
+        "key_id": {
+          "type": "string",
+          "default": "",
+          "description": "Id of the signing key. Empty on an unsigned receipt."
+        },
+        "signature": {
+          "type": "string",
+          "default": "",
+          "description": "'hmac-sha256:' followed by 64 lowercase hex digits. Empty on an unsigned receipt. The form is checked when the signature is verified, not when the document is parsed, so it is not a pattern here."
+        }
+      },
+      "$comment": "Not expressible: a reference of kind take must name its take_id and one of kind asset must not (checked when the receipt is attached to an order, error receipt_invalid); issued_at <= expires_at is not checked by the code either."
+    },
+    "render_receipt_reference": {
+      "description": "One reference wired into the render.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "slot",
+        "kind",
+        "kref",
+        "take_id"
+      ],
+      "properties": {
+        "slot": {
+          "type": "string",
+          "description": "The slot the reference occupies in the model's addressing scheme."
+        },
+        "kind": {
+          "$ref": "#/$defs/reference_kind"
+        },
+        "kref": {
+          "type": "string",
+          "description": "Reference of the take revision or asset."
+        },
+        "take_id": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "default": null,
+          "description": "Required for kind take, null for kind asset (enforced when the receipt is attached)."
+        }
+      }
+    },
+    "review_policy": {
+      "description": "How much a person reviews. A work order may override the project's policy.",
+      "type": "string",
+      "enum": [
+        "exceptions_only",
+        "follow",
+        "blocking"
+      ]
+    },
+    "submission": {
+      "description": "What the host sends back after generating (or writing, for text): where the result is and what produced it.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "result_ref",
+        "model_used",
+        "profile_id",
+        "final_prompt_sha256"
+      ],
+      "properties": {
+        "result_ref": {
+          "type": "string",
+          "description": "Result URL or upload id."
+        },
+        "model_used": {
+          "type": "string",
+          "default": "",
+          "description": "The model the host actually used. Empty when unknown."
+        },
+        "profile_id": {
+          "type": "string",
+          "default": "",
+          "description": "The model profile the host says it generated with. Empty when it does not know."
+        },
+        "final_prompt_sha256": {
+          "type": "string",
+          "default": "",
+          "description": "Hash of the prompt the host finally sent, if it reworded the rendered one. Empty when unchanged."
+        }
+      }
+    },
+    "work_order": {
+      "description": "One unit of work: making one medium of one Moment. The document is a record; every state change produces a new copy with a higher seq. Times are integer epoch seconds supplied by the caller.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "version",
+        "seq",
+        "tenant_id",
+        "project_id",
+        "order_id",
+        "moment_id",
+        "scope_id",
+        "sequence",
+        "medium",
+        "canon_revision",
+        "depends_on",
+        "state",
+        "issued_at",
+        "updated_at",
+        "lease_seconds",
+        "assignee",
+        "lease_expires_at",
+        "anchor",
+        "policy",
+        "contention_group",
+        "participant",
+        "profile_id",
+        "after_order_ids",
+        "reissued_from",
+        "successor_id",
+        "revision_notes",
+        "direction_kref",
+        "direction_revisions",
+        "receipt",
+        "submission",
+        "take_id",
+        "closed_by",
+        "confirmed_by_policy",
+        "close_reason",
+        "review_notes"
+      ],
+      "properties": {
+        "version": {
+          "type": "integer",
+          "minimum": 1,
+          "default": 2,
+          "description": "Ledger record version; 2 today. Any integer from 1 parses, so older stored records stay readable."
+        },
+        "seq": {
+          "type": "integer",
+          "default": 0,
+          "description": "Bumped by every state change. The storage layer compares and swaps on it."
+        },
+        "tenant_id": {
+          "type": "string"
+        },
+        "project_id": {
+          "type": "string"
+        },
+        "order_id": {
+          "type": "string",
+          "description": "Also the idempotency key: registering the same result twice yields one take."
+        },
+        "moment_id": {
+          "type": "string"
+        },
+        "scope_id": {
+          "type": "string",
+          "description": "The scene the Moment belongs to. A take awaiting a person holds later orders of the same scope only."
+        },
+        "sequence": {
+          "type": "integer",
+          "description": "The Moment's place in production order. Reissues keep it."
+        },
+        "medium": {
+          "$ref": "#/$defs/medium"
+        },
+        "canon_revision": {
+          "type": "string",
+          "description": "The approved Canon revision the order is pinned to."
+        },
+        "depends_on": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "uniqueItems": true,
+          "default": [],
+          "description": "story-core node keys (story_revision_domains, bare kind/id, e.g. character/rhea) this Moment's work leans on, the union over the narrative and production domains. Opaque to the ledger: compared as strings with changed_domains. No entry repeats."
+        },
+        "state": {
+          "$ref": "#/$defs/order_state",
+          "default": "issued"
+        },
+        "issued_at": {
+          "type": "integer"
+        },
+        "updated_at": {
+          "type": "integer"
+        },
+        "lease_seconds": {
+          "type": "integer",
+          "exclusiveMinimum": 0,
+          "description": "Length of the lease in seconds."
+        },
+        "assignee": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "default": null,
+          "description": "The member the order is bound to; null while unclaimed."
+        },
+        "lease_expires_at": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "default": null,
+          "description": "Epoch seconds the lease ends; null while unclaimed or once the work is done."
+        },
+        "anchor": {
+          "type": "boolean",
+          "default": false,
+          "description": "A cut later cuts lean on (first appearance, new costume, new location)."
+        },
+        "policy": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/review_policy"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Per-Moment override of the project's review policy; null means follow the project."
+        },
+        "contention_group": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "default": null,
+          "description": "Orders in one group are deliberate overlaps on the same Moment and medium."
+        },
+        "participant": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "default": null,
+          "description": "In a contention group: the one member this order is for."
+        },
+        "profile_id": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "default": null,
+          "description": "In a contention group: the model profile this order is for, when fixed. On a winner's remake: the profile that won, as a hint."
+        },
+        "after_order_ids": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": [],
+          "description": "Anchor orders this one waits on until a person approves their take. Followed through reissues by successor_id."
+        },
+        "reissued_from": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "default": null,
+          "description": "The order this one replaced."
+        },
+        "successor_id": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "default": null,
+          "description": "The order that replaced this one."
+        },
+        "revision_notes": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "default": null,
+          "description": "The reviewer's notes a remake must address."
+        },
+        "direction_kref": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "default": null
+        },
+        "direction_revisions": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": [],
+          "description": "Canon revisions the current direction and receipt are valid for. A Canon change that misses depends_on extends this instead of voiding the work."
+        },
+        "receipt": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/render_receipt"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "submission": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/submission"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "take_id": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "default": null
+        },
+        "closed_by": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "default": null,
+          "description": "The person who approved, rejected, withdrew or superseded. A policy confirmation leaves it null and sets confirmed_by_policy."
+        },
+        "confirmed_by_policy": {
+          "type": "boolean",
+          "default": false
+        },
+        "close_reason": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/close_reason"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "review_notes": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "default": null
+        }
+      },
+      "$comment": "Not expressible: which fields must be set in which state (assignee and lease_expires_at while working, take_id once recorded, close_reason once closed) is enforced by the transition functions, not by parsing. For every nullable field an absent key and a null mean the same; writers should still emit every field."
+    }
+  }
+}

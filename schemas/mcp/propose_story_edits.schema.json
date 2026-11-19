@@ -1,0 +1,119 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "propose_story_edits",
+  "description": "The propose_story_edits tool contract of 9miho-storyteller's MCP server (generated).",
+  "profiles": [
+    "granular",
+    "guided"
+  ],
+  "annotations": {
+    "readOnlyHint": false,
+    "destructiveHint": false,
+    "idempotentHint": false,
+    "openWorldHint": false
+  },
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "project_id": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 200,
+        "pattern": "^[^\\u0000-\\u001f]+$"
+      },
+      "idempotency_key": {
+        "type": "string",
+        "minLength": 8,
+        "maxLength": 128,
+        "pattern": "^[A-Za-z0-9._:-]+$",
+        "description": "A fresh UUID per new action; reuse only to retry the same call."
+      },
+      "base_seq": {
+        "type": "integer",
+        "minimum": 0,
+        "description": "The draft_seq you read."
+      },
+      "summary": {
+        "type": "string",
+        "maxLength": 2000
+      },
+      "edits": {
+        "type": "array",
+        "minItems": 1,
+        "maxItems": 200,
+        "items": {
+          "type": "object",
+          "properties": {
+            "op": {
+              "type": "string",
+              "enum": [
+                "rename_character",
+                "change_character_trait",
+                "define_costume",
+                "set_costume",
+                "add_moment",
+                "remove_moment",
+                "reorder_scene_moments",
+                "move_moment",
+                "change_dialogue_line",
+                "add_continuity_note"
+              ]
+            }
+          },
+          "required": [
+            "op"
+          ]
+        },
+        "description": "The edits, in order (see the description)."
+      }
+    },
+    "required": [
+      "project_id",
+      "idempotency_key",
+      "base_seq",
+      "edits"
+    ],
+    "additionalProperties": false
+  },
+  "outputSchema": {
+    "type": "object",
+    "properties": {
+      "proposal_id": {
+        "type": "string"
+      },
+      "status": {
+        "type": "string"
+      },
+      "draft_seq": {
+        "type": "integer"
+      },
+      "conflicts": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      },
+      "repeated": {
+        "type": "boolean"
+      },
+      "next_steps": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      },
+      "touched": {
+        "type": "object"
+      }
+    },
+    "required": [
+      "proposal_id",
+      "status",
+      "draft_seq",
+      "conflicts",
+      "next_steps",
+      "touched"
+    ],
+    "additionalProperties": false
+  }
+}

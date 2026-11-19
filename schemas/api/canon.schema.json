@@ -1,0 +1,2284 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "canon",
+  "description": "Approved Canon at a revision (ETag)",
+  "method": "GET",
+  "path": "/api/projects/{project}/canon",
+  "query": [
+    "revision"
+  ],
+  "request": null,
+  "response": {
+    "type": "object",
+    "properties": {
+      "project_id": {
+        "type": "string"
+      },
+      "revision": {
+        "type": "string"
+      },
+      "number": {
+        "type": "integer"
+      },
+      "approved_at": {
+        "type": "integer"
+      },
+      "approved_by": {
+        "type": "string"
+      },
+      "document": {
+        "$ref": "#/$defs/StoryDocument"
+      }
+    },
+    "required": [
+      "project_id",
+      "revision",
+      "number",
+      "approved_at",
+      "approved_by",
+      "document"
+    ],
+    "additionalProperties": false
+  },
+  "error": {
+    "$ref": "#/$defs/error_body"
+  },
+  "$defs": {
+    "CharacterState": {
+      "additionalProperties": false,
+      "properties": {
+        "physical": {
+          "default": "",
+          "type": "string"
+        },
+        "psychological": {
+          "default": "",
+          "type": "string"
+        },
+        "knowledge": {
+          "default": "",
+          "type": "string"
+        },
+        "relationships": {
+          "default": "",
+          "type": "string"
+        }
+      },
+      "type": "object",
+      "required": [
+        "physical",
+        "psychological",
+        "knowledge",
+        "relationships"
+      ]
+    },
+    "CharacterStateSnapshot": {
+      "additionalProperties": false,
+      "properties": {
+        "physical": {
+          "default": "",
+          "type": "string"
+        },
+        "psychological": {
+          "default": "",
+          "type": "string"
+        },
+        "knowledge": {
+          "default": "",
+          "type": "string"
+        },
+        "relationships": {
+          "default": "",
+          "type": "string"
+        },
+        "id": {
+          "default": "",
+          "type": "string"
+        },
+        "effective_at": {
+          "$ref": "#/$defs/StoryCursor"
+        },
+        "source_moment_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "type": "object",
+      "required": [
+        "physical",
+        "psychological",
+        "knowledge",
+        "relationships",
+        "id",
+        "effective_at",
+        "source_moment_id"
+      ]
+    },
+    "StateDelta": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "default": "",
+          "type": "string"
+        },
+        "character_id": {
+          "default": "",
+          "type": "string"
+        },
+        "dimension": {
+          "default": "psychological",
+          "enum": [
+            "physical",
+            "psychological",
+            "knowledge",
+            "relationship"
+          ],
+          "type": "string"
+        },
+        "before": {
+          "default": "",
+          "type": "string"
+        },
+        "after": {
+          "default": "",
+          "type": "string"
+        },
+        "risk": {
+          "default": "safe",
+          "enum": [
+            "safe",
+            "review"
+          ],
+          "type": "string"
+        },
+        "approved": {
+          "default": false,
+          "type": "boolean"
+        }
+      },
+      "type": "object",
+      "required": [
+        "id",
+        "character_id",
+        "dimension",
+        "before",
+        "after",
+        "risk",
+        "approved"
+      ]
+    },
+    "StoryArc": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "default": "",
+          "type": "string"
+        },
+        "title": {
+          "default": "",
+          "type": "string"
+        },
+        "summary": {
+          "default": "",
+          "type": "string"
+        },
+        "start_episode": {
+          "default": 1,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "end_episode": {
+          "default": 1,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "stakes": {
+          "default": "",
+          "type": "string"
+        },
+        "turn": {
+          "default": "",
+          "type": "string"
+        }
+      },
+      "type": "object",
+      "required": [
+        "id",
+        "title",
+        "summary",
+        "start_episode",
+        "end_episode",
+        "stakes",
+        "turn"
+      ]
+    },
+    "StoryCameraDesign": {
+      "additionalProperties": false,
+      "properties": {
+        "height": {
+          "default": "",
+          "type": "string"
+        },
+        "angle": {
+          "default": "",
+          "type": "string"
+        },
+        "side": {
+          "default": "",
+          "type": "string"
+        },
+        "framing": {
+          "default": "",
+          "type": "string"
+        },
+        "movement": {
+          "default": "",
+          "type": "string"
+        },
+        "motivation": {
+          "default": "",
+          "type": "string"
+        },
+        "handheld": {
+          "default": "",
+          "type": "string"
+        },
+        "focus": {
+          "default": "",
+          "type": "string"
+        }
+      },
+      "type": "object",
+      "required": [
+        "height",
+        "angle",
+        "side",
+        "framing",
+        "movement",
+        "motivation",
+        "handheld",
+        "focus"
+      ]
+    },
+    "StoryCharacter": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "default": "",
+          "type": "string"
+        },
+        "name": {
+          "default": "",
+          "type": "string"
+        },
+        "role": {
+          "default": "",
+          "type": "string"
+        },
+        "summary": {
+          "default": "",
+          "type": "string"
+        },
+        "visual_anchors": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "invariants": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "reference_image_krefs": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "state": {
+          "$ref": "#/$defs/CharacterState"
+        },
+        "state_history": {
+          "items": {
+            "$ref": "#/$defs/CharacterStateSnapshot"
+          },
+          "type": "array"
+        },
+        "speech_profile": {
+          "$ref": "#/$defs/StorySpeechProfile"
+        },
+        "costumes": {
+          "items": {
+            "$ref": "#/$defs/StoryCostume"
+          },
+          "type": "array"
+        }
+      },
+      "type": "object",
+      "required": [
+        "id",
+        "name",
+        "role",
+        "summary",
+        "visual_anchors",
+        "invariants",
+        "reference_image_krefs",
+        "state",
+        "state_history",
+        "speech_profile",
+        "costumes"
+      ]
+    },
+    "StoryCostume": {
+      "additionalProperties": false,
+      "description": "One outfit in a character's wardrobe (guide 7.8, 18).\n\nA Moment puts a character in it through `StoryMoment.costumes`; the outfit\nthen holds for that character through the rest of the episode until\nanother Moment changes it (`story_costume`). Narrative Canon: changing\nan outfit's look makes the Takes that show it stale.",
+      "properties": {
+        "id": {
+          "default": "",
+          "type": "string"
+        },
+        "name": {
+          "default": "",
+          "type": "string"
+        },
+        "summary": {
+          "default": "",
+          "type": "string"
+        },
+        "visual_anchors": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        }
+      },
+      "type": "object",
+      "required": [
+        "id",
+        "name",
+        "summary",
+        "visual_anchors"
+      ]
+    },
+    "StoryCursor": {
+      "additionalProperties": false,
+      "properties": {
+        "episode": {
+          "default": 1,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "scene": {
+          "default": "",
+          "type": "string"
+        },
+        "moment": {
+          "default": "",
+          "type": "string"
+        }
+      },
+      "type": "object",
+      "required": [
+        "episode",
+        "scene",
+        "moment"
+      ]
+    },
+    "StoryDialogueLine": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "maxLength": 256,
+          "minLength": 1,
+          "type": "string"
+        },
+        "order": {
+          "minimum": 1,
+          "type": "integer"
+        },
+        "speaker_id": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "addressee_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "text": {
+          "maxLength": 10000,
+          "minLength": 1,
+          "type": "string"
+        },
+        "intent": {
+          "default": "",
+          "type": "string"
+        },
+        "subtext": {
+          "default": "",
+          "type": "string"
+        },
+        "listening": {
+          "default": "",
+          "type": "string"
+        },
+        "response_to": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "evidence_ids": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "source_refs": {
+          "items": {
+            "$ref": "#/$defs/StoryDialogueSourceRef"
+          },
+          "type": "array"
+        }
+      },
+      "required": [
+        "id",
+        "order",
+        "speaker_id",
+        "addressee_id",
+        "text",
+        "intent",
+        "subtext",
+        "listening",
+        "response_to",
+        "evidence_ids",
+        "source_refs"
+      ],
+      "type": "object"
+    },
+    "StoryDialogueSourceRef": {
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "enum": [
+            "shot",
+            "webtoon_script",
+            "balloon",
+            "canonical"
+          ],
+          "type": "string"
+        },
+        "id": {
+          "maxLength": 256,
+          "minLength": 1,
+          "type": "string"
+        }
+      },
+      "required": [
+        "kind",
+        "id"
+      ],
+      "type": "object"
+    },
+    "StoryDirectionPlan": {
+      "additionalProperties": false,
+      "properties": {
+        "visual_intent": {
+          "default": "",
+          "type": "string"
+        },
+        "performance": {
+          "default": "",
+          "type": "string"
+        },
+        "blocking": {
+          "default": "",
+          "type": "string"
+        },
+        "camera": {
+          "default": "",
+          "type": "string"
+        },
+        "camera_design": {
+          "$ref": "#/$defs/StoryCameraDesign"
+        },
+        "lighting": {
+          "default": "",
+          "type": "string"
+        },
+        "audio": {
+          "default": "",
+          "type": "string"
+        },
+        "continuity": {
+          "default": "",
+          "type": "string"
+        },
+        "performers": {
+          "items": {
+            "$ref": "#/$defs/StoryPerformerDirection"
+          },
+          "type": "array"
+        },
+        "shots": {
+          "items": {
+            "$ref": "#/$defs/StoryShot"
+          },
+          "type": "array"
+        },
+        "webtoon_script": {
+          "items": {
+            "$ref": "#/$defs/WebtoonScriptLine"
+          },
+          "maxItems": 200,
+          "type": "array"
+        },
+        "panels": {
+          "items": {
+            "$ref": "#/$defs/WebtoonPanel"
+          },
+          "type": "array"
+        }
+      },
+      "type": "object",
+      "required": [
+        "visual_intent",
+        "performance",
+        "blocking",
+        "camera",
+        "camera_design",
+        "lighting",
+        "audio",
+        "continuity",
+        "performers",
+        "shots",
+        "webtoon_script",
+        "panels"
+      ]
+    },
+    "StoryDocument": {
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "const": 1,
+          "default": 1,
+          "type": "integer"
+        },
+        "title": {
+          "default": "",
+          "type": "string"
+        },
+        "premise": {
+          "default": "",
+          "type": "string"
+        },
+        "synopsis": {
+          "default": "",
+          "type": "string"
+        },
+        "format": {
+          "$ref": "#/$defs/StoryFormat"
+        },
+        "protagonist_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "cursor": {
+          "$ref": "#/$defs/StoryCursor"
+        },
+        "story_arcs": {
+          "items": {
+            "$ref": "#/$defs/StoryArc"
+          },
+          "type": "array"
+        },
+        "episodes": {
+          "items": {
+            "$ref": "#/$defs/StoryEpisode"
+          },
+          "type": "array"
+        },
+        "characters": {
+          "items": {
+            "$ref": "#/$defs/StoryCharacter"
+          },
+          "type": "array"
+        },
+        "locations": {
+          "items": {
+            "$ref": "#/$defs/StoryLocation"
+          },
+          "type": "array"
+        },
+        "props": {
+          "items": {
+            "$ref": "#/$defs/StoryProp"
+          },
+          "type": "array"
+        },
+        "relationships": {
+          "items": {
+            "$ref": "#/$defs/StoryRelationship"
+          },
+          "type": "array"
+        },
+        "moments": {
+          "items": {
+            "$ref": "#/$defs/StoryMoment"
+          },
+          "type": "array"
+        },
+        "outputs": {
+          "items": {
+            "$ref": "#/$defs/StoryOutputRef"
+          },
+          "type": "array"
+        },
+        "proposal_history": {
+          "items": {
+            "$ref": "#/$defs/StoryProposalDecision"
+          },
+          "type": "array"
+        },
+        "selected_arc_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "selected_episode_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "selected_character_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "selected_location_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "selected_prop_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "selected_moment_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "type": "object",
+      "required": [
+        "schema_version",
+        "title",
+        "premise",
+        "synopsis",
+        "format",
+        "protagonist_id",
+        "cursor",
+        "story_arcs",
+        "episodes",
+        "characters",
+        "locations",
+        "props",
+        "relationships",
+        "moments",
+        "outputs",
+        "proposal_history",
+        "selected_arc_id",
+        "selected_episode_id",
+        "selected_character_id",
+        "selected_location_id",
+        "selected_prop_id",
+        "selected_moment_id"
+      ]
+    },
+    "StoryEpisode": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "default": "",
+          "type": "string"
+        },
+        "number": {
+          "default": 1,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "title": {
+          "default": "",
+          "type": "string"
+        },
+        "hook": {
+          "default": "",
+          "type": "string"
+        },
+        "arc": {
+          "default": "",
+          "type": "string"
+        },
+        "cliffhanger": {
+          "default": "",
+          "type": "string"
+        },
+        "status": {
+          "default": "idea",
+          "enum": [
+            "idea",
+            "outlined",
+            "ready"
+          ],
+          "type": "string"
+        },
+        "scenes": {
+          "items": {
+            "$ref": "#/$defs/StoryScene"
+          },
+          "type": "array"
+        }
+      },
+      "type": "object",
+      "required": [
+        "id",
+        "number",
+        "title",
+        "hook",
+        "arc",
+        "cliffhanger",
+        "status",
+        "scenes"
+      ]
+    },
+    "StoryFacialAction": {
+      "additionalProperties": false,
+      "description": "Auditable FACS evidence compiled away before provider rendering.",
+      "properties": {
+        "au": {
+          "enum": [
+            "AU1",
+            "AU4",
+            "AU6",
+            "AU7",
+            "AU12",
+            "AU15",
+            "AU17",
+            "AU23",
+            "AU24"
+          ],
+          "type": "string"
+        },
+        "mode": {
+          "default": "activate",
+          "enum": [
+            "activate",
+            "suppress"
+          ],
+          "type": "string"
+        },
+        "intensity": {
+          "default": "slight",
+          "enum": [
+            "none",
+            "trace",
+            "slight",
+            "moderate",
+            "strong"
+          ],
+          "type": "string"
+        },
+        "laterality": {
+          "default": "bilateral",
+          "enum": [
+            "bilateral",
+            "left",
+            "right"
+          ],
+          "type": "string"
+        },
+        "timing": {
+          "default": "apex",
+          "enum": [
+            "baseline",
+            "onset",
+            "apex",
+            "offset"
+          ],
+          "type": "string"
+        },
+        "hold": {
+          "default": "none",
+          "enum": [
+            "none",
+            "beat",
+            "shot"
+          ],
+          "type": "string"
+        }
+      },
+      "required": [
+        "au",
+        "mode",
+        "intensity",
+        "laterality",
+        "timing",
+        "hold"
+      ],
+      "type": "object"
+    },
+    "StoryFormat": {
+      "additionalProperties": false,
+      "properties": {
+        "scope": {
+          "anyOf": [
+            {
+              "enum": [
+                "short",
+                "feature",
+                "series"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "kind": {
+          "default": "series",
+          "enum": [
+            "microdrama",
+            "series",
+            "webtoon"
+          ],
+          "type": "string"
+        },
+        "aspect_ratio": {
+          "default": "16:9",
+          "type": "string"
+        },
+        "episode_duration_seconds": {
+          "default": 1800,
+          "maximum": 7200,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "target_episode_count": {
+          "default": 8,
+          "maximum": 500,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "tone": {
+          "default": "",
+          "type": "string"
+        },
+        "audience": {
+          "default": "",
+          "type": "string"
+        },
+        "webtoon": {
+          "$ref": "#/$defs/StoryWebtoonPolicy"
+        }
+      },
+      "type": "object",
+      "required": [
+        "scope",
+        "kind",
+        "aspect_ratio",
+        "episode_duration_seconds",
+        "target_episode_count",
+        "tone",
+        "audience",
+        "webtoon"
+      ]
+    },
+    "StoryLocation": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "default": "",
+          "type": "string"
+        },
+        "name": {
+          "default": "",
+          "type": "string"
+        },
+        "summary": {
+          "default": "",
+          "type": "string"
+        },
+        "visual_anchors": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "invariants": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "reference_image_krefs": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        }
+      },
+      "type": "object",
+      "required": [
+        "id",
+        "name",
+        "summary",
+        "visual_anchors",
+        "invariants",
+        "reference_image_krefs"
+      ]
+    },
+    "StoryMoment": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "default": "",
+          "type": "string"
+        },
+        "title": {
+          "default": "",
+          "type": "string"
+        },
+        "purpose": {
+          "default": "",
+          "type": "string"
+        },
+        "why_now": {
+          "default": "",
+          "type": "string"
+        },
+        "conflict": {
+          "default": "",
+          "type": "string"
+        },
+        "action_or_decision": {
+          "default": "",
+          "type": "string"
+        },
+        "outcome": {
+          "default": "",
+          "type": "string"
+        },
+        "participants": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "before": {
+          "default": "",
+          "type": "string"
+        },
+        "after": {
+          "default": "",
+          "type": "string"
+        },
+        "episode_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "scene_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "location_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "prop_ids": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "reference_image_krefs": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "production_reference_krefs": {
+          "$ref": "#/$defs/StoryProductionReferenceKrefs"
+        },
+        "duration_seconds": {
+          "default": 8,
+          "maximum": 60,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "state_deltas": {
+          "items": {
+            "$ref": "#/$defs/StateDelta"
+          },
+          "type": "array"
+        },
+        "dialogue_ledger": {
+          "items": {
+            "$ref": "#/$defs/StoryDialogueLine"
+          },
+          "maxItems": 200,
+          "type": "array"
+        },
+        "dialogue_silence": {
+          "default": "",
+          "type": "string"
+        },
+        "direction": {
+          "$ref": "#/$defs/StoryDirectionPlan"
+        },
+        "costumes": {
+          "items": {
+            "$ref": "#/$defs/StoryMomentCostume"
+          },
+          "type": "array"
+        }
+      },
+      "type": "object",
+      "required": [
+        "id",
+        "title",
+        "purpose",
+        "why_now",
+        "conflict",
+        "action_or_decision",
+        "outcome",
+        "participants",
+        "before",
+        "after",
+        "episode_id",
+        "scene_id",
+        "location_id",
+        "prop_ids",
+        "reference_image_krefs",
+        "production_reference_krefs",
+        "duration_seconds",
+        "state_deltas",
+        "dialogue_ledger",
+        "dialogue_silence",
+        "direction",
+        "costumes"
+      ]
+    },
+    "StoryMomentCostume": {
+      "additionalProperties": false,
+      "description": "What one character wears from this Moment on (`costume_id` names a row\nof that character's `costumes`). `note` is Moment-local continuity on top\nof the outfit: a torn sleeve, the coat now off.",
+      "properties": {
+        "character_id": {
+          "default": "",
+          "type": "string"
+        },
+        "costume_id": {
+          "default": "",
+          "type": "string"
+        },
+        "note": {
+          "default": "",
+          "type": "string"
+        }
+      },
+      "type": "object",
+      "required": [
+        "character_id",
+        "costume_id",
+        "note"
+      ]
+    },
+    "StoryOutputRef": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "default": "",
+          "type": "string"
+        },
+        "kref": {
+          "default": "",
+          "type": "string"
+        },
+        "item_kref": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "medium": {
+          "default": "image",
+          "enum": [
+            "image",
+            "video",
+            "audio"
+          ],
+          "type": "string"
+        },
+        "source_kind": {
+          "default": "character",
+          "enum": [
+            "character",
+            "location",
+            "prop",
+            "moment",
+            "scene"
+          ],
+          "type": "string"
+        },
+        "source_id": {
+          "default": "",
+          "type": "string"
+        },
+        "purpose": {
+          "default": "",
+          "type": "string"
+        },
+        "label": {
+          "default": "",
+          "type": "string"
+        },
+        "canon_revision_kref": {
+          "default": "",
+          "type": "string"
+        },
+        "art_locked_canon_revision_kref": {
+          "default": "",
+          "type": "string"
+        },
+        "approved_at": {
+          "default": "",
+          "type": "string"
+        },
+        "freshness": {
+          "default": "fresh",
+          "enum": [
+            "fresh",
+            "stale"
+          ],
+          "type": "string"
+        },
+        "reference_expression": {
+          "anyOf": [
+            {
+              "enum": [
+                "neutral",
+                "expressive",
+                "unknown"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "speaker_character_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "dialogue_cue_index": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "dialogue_cue_group_id": {
+          "anyOf": [
+            {
+              "maxLength": 100,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "dialogue_cue_count": {
+          "anyOf": [
+            {
+              "minimum": 1,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "dialogue_starts_at_seconds": {
+          "anyOf": [
+            {
+              "maximum": 60,
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "webtoon_panel_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "reference_kref_limit": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "webtoon_qc": {
+          "anyOf": [
+            {
+              "enum": [
+                "pending",
+                "passed"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "camera_plan_kref": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "camera_plan_source_fingerprint": {
+          "anyOf": [
+            {
+              "maxLength": 200,
+              "pattern": "^camera-previz-v1:[0-9a-f]{16}:[1-9][0-9]*$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "type": "object",
+      "required": [
+        "id",
+        "kref",
+        "item_kref",
+        "medium",
+        "source_kind",
+        "source_id",
+        "purpose",
+        "label",
+        "canon_revision_kref",
+        "art_locked_canon_revision_kref",
+        "approved_at",
+        "freshness",
+        "reference_expression",
+        "speaker_character_id",
+        "dialogue_cue_index",
+        "dialogue_cue_group_id",
+        "dialogue_cue_count",
+        "dialogue_starts_at_seconds",
+        "webtoon_panel_id",
+        "reference_kref_limit",
+        "webtoon_qc",
+        "camera_plan_kref",
+        "camera_plan_source_fingerprint"
+      ]
+    },
+    "StoryPerformanceBeat": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "default": "",
+          "type": "string"
+        },
+        "order": {
+          "default": 1,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "shot_id": {
+          "default": "",
+          "type": "string"
+        },
+        "tactic": {
+          "default": "",
+          "type": "string"
+        },
+        "action": {
+          "default": "",
+          "type": "string"
+        },
+        "visible_change": {
+          "default": "",
+          "type": "string"
+        },
+        "facial_actions": {
+          "items": {
+            "$ref": "#/$defs/StoryFacialAction"
+          },
+          "type": "array"
+        }
+      },
+      "type": "object",
+      "required": [
+        "id",
+        "order",
+        "shot_id",
+        "tactic",
+        "action",
+        "visible_change",
+        "facial_actions"
+      ]
+    },
+    "StoryPerformerDirection": {
+      "additionalProperties": false,
+      "properties": {
+        "character_id": {
+          "default": "",
+          "type": "string"
+        },
+        "objective": {
+          "default": "",
+          "type": "string"
+        },
+        "obstacle": {
+          "default": "",
+          "type": "string"
+        },
+        "stakes": {
+          "default": "",
+          "type": "string"
+        },
+        "subtext": {
+          "default": "",
+          "type": "string"
+        },
+        "body": {
+          "default": "",
+          "type": "string"
+        },
+        "business": {
+          "default": "",
+          "type": "string"
+        },
+        "status": {
+          "default": "",
+          "type": "string"
+        },
+        "eye_life": {
+          "default": "",
+          "type": "string"
+        },
+        "voice": {
+          "default": "",
+          "type": "string"
+        },
+        "beats": {
+          "items": {
+            "$ref": "#/$defs/StoryPerformanceBeat"
+          },
+          "type": "array"
+        }
+      },
+      "type": "object",
+      "required": [
+        "character_id",
+        "objective",
+        "obstacle",
+        "stakes",
+        "subtext",
+        "body",
+        "business",
+        "status",
+        "eye_life",
+        "voice",
+        "beats"
+      ]
+    },
+    "StoryProductionReferenceKrefs": {
+      "additionalProperties": false,
+      "properties": {
+        "moment_image": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "blocking_camera_plan": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "moment_video": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "reference_video": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        }
+      },
+      "type": "object",
+      "required": [
+        "moment_image",
+        "blocking_camera_plan",
+        "moment_video",
+        "reference_video"
+      ]
+    },
+    "StoryProp": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "default": "",
+          "type": "string"
+        },
+        "name": {
+          "default": "",
+          "type": "string"
+        },
+        "summary": {
+          "default": "",
+          "type": "string"
+        },
+        "visual_anchors": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "invariants": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "reference_image_krefs": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        }
+      },
+      "type": "object",
+      "required": [
+        "id",
+        "name",
+        "summary",
+        "visual_anchors",
+        "invariants",
+        "reference_image_krefs"
+      ]
+    },
+    "StoryProposalDecision": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "summary": {
+          "default": "",
+          "type": "string"
+        },
+        "status": {
+          "enum": [
+            "accepted",
+            "rejected"
+          ],
+          "type": "string"
+        },
+        "decided_at": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "summary",
+        "status",
+        "decided_at"
+      ],
+      "type": "object"
+    },
+    "StoryRelationship": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "default": "",
+          "type": "string"
+        },
+        "from_character_id": {
+          "default": "",
+          "type": "string"
+        },
+        "to_character_id": {
+          "default": "",
+          "type": "string"
+        },
+        "kind": {
+          "default": "",
+          "type": "string"
+        },
+        "public_state": {
+          "default": "",
+          "type": "string"
+        },
+        "private_state": {
+          "default": "",
+          "type": "string"
+        },
+        "trust": {
+          "default": 50,
+          "maximum": 100,
+          "minimum": 0,
+          "type": "integer"
+        },
+        "tension": {
+          "default": 50,
+          "maximum": 100,
+          "minimum": 0,
+          "type": "integer"
+        },
+        "effective_from_episode": {
+          "anyOf": [
+            {
+              "minimum": 1,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "effective_until_episode": {
+          "anyOf": [
+            {
+              "minimum": 1,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "type": "object",
+      "required": [
+        "id",
+        "from_character_id",
+        "to_character_id",
+        "kind",
+        "public_state",
+        "private_state",
+        "trust",
+        "tension",
+        "effective_from_episode",
+        "effective_until_episode"
+      ]
+    },
+    "StoryScene": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "default": "",
+          "type": "string"
+        },
+        "title": {
+          "default": "",
+          "type": "string"
+        },
+        "location_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "time": {
+          "default": "",
+          "type": "string"
+        },
+        "objective": {
+          "default": "",
+          "type": "string"
+        },
+        "outcome": {
+          "default": "",
+          "type": "string"
+        },
+        "moment_ids": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "reference_image_krefs": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        }
+      },
+      "type": "object",
+      "required": [
+        "id",
+        "title",
+        "location_id",
+        "time",
+        "objective",
+        "outcome",
+        "moment_ids",
+        "reference_image_krefs"
+      ]
+    },
+    "StoryShot": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "default": "",
+          "type": "string"
+        },
+        "order": {
+          "default": 1,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "duration_seconds": {
+          "default": 2,
+          "exclusiveMinimum": 0,
+          "maximum": 60,
+          "type": "number"
+        },
+        "framing": {
+          "default": "",
+          "type": "string"
+        },
+        "camera": {
+          "default": "",
+          "type": "string"
+        },
+        "emotion_curve": {
+          "default": "",
+          "type": "string"
+        },
+        "performance": {
+          "default": "",
+          "type": "string"
+        },
+        "performance_guardrails": {
+          "default": "",
+          "type": "string"
+        },
+        "action": {
+          "default": "",
+          "type": "string"
+        },
+        "dialogue": {
+          "default": "",
+          "type": "string"
+        },
+        "dialogue_speaker_id": {
+          "default": "",
+          "type": "string"
+        },
+        "dialogue_starts_at_seconds": {
+          "anyOf": [
+            {
+              "maximum": 60,
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "dialogue_silence_before_seconds": {
+          "anyOf": [
+            {
+              "maximum": 60,
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "dialogue_silence_after_seconds": {
+          "anyOf": [
+            {
+              "maximum": 60,
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "type": "object",
+      "required": [
+        "id",
+        "order",
+        "duration_seconds",
+        "framing",
+        "camera",
+        "emotion_curve",
+        "performance",
+        "performance_guardrails",
+        "action",
+        "dialogue",
+        "dialogue_speaker_id",
+        "dialogue_starts_at_seconds",
+        "dialogue_silence_before_seconds",
+        "dialogue_silence_after_seconds"
+      ]
+    },
+    "StorySpeechProfile": {
+      "additionalProperties": false,
+      "properties": {
+        "register": {
+          "default": "",
+          "type": "string"
+        },
+        "address_terms": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "type": "object"
+        },
+        "rhythm": {
+          "default": "",
+          "type": "string"
+        },
+        "vocabulary": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "avoidances": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        }
+      },
+      "type": "object",
+      "required": [
+        "register",
+        "address_terms",
+        "rhythm",
+        "vocabulary",
+        "avoidances"
+      ]
+    },
+    "StoryWebtoonArtStyle": {
+      "additionalProperties": false,
+      "properties": {
+        "prompt": {
+          "default": "",
+          "type": "string"
+        },
+        "reference_krefs": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        }
+      },
+      "type": "object",
+      "required": [
+        "prompt",
+        "reference_krefs"
+      ]
+    },
+    "StoryWebtoonPolicy": {
+      "additionalProperties": false,
+      "properties": {
+        "target_panels_per_episode": {
+          "default": 50,
+          "maximum": 200,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "lettering_mode": {
+          "default": "overlay",
+          "enum": [
+            "overlay",
+            "in_image"
+          ],
+          "type": "string"
+        },
+        "art_style": {
+          "$ref": "#/$defs/StoryWebtoonArtStyle"
+        }
+      },
+      "type": "object",
+      "required": [
+        "target_panels_per_episode",
+        "lettering_mode",
+        "art_style"
+      ]
+    },
+    "WebtoonBalloon": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "default": "",
+          "type": "string"
+        },
+        "order": {
+          "default": 1,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "speaker_character_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "kind": {
+          "default": "dialogue",
+          "enum": [
+            "dialogue",
+            "thought",
+            "shout",
+            "narration"
+          ],
+          "type": "string"
+        },
+        "text": {
+          "default": "",
+          "type": "string"
+        },
+        "placement": {
+          "default": "top_center",
+          "enum": [
+            "top_left",
+            "top_center",
+            "top_right",
+            "middle_left",
+            "middle_right",
+            "bottom_left",
+            "bottom_center",
+            "bottom_right"
+          ],
+          "type": "string"
+        },
+        "tail": {
+          "default": "down",
+          "enum": [
+            "none",
+            "left",
+            "right",
+            "up",
+            "down",
+            "up_left",
+            "up_right",
+            "down_left",
+            "down_right"
+          ],
+          "type": "string"
+        },
+        "font_family": {
+          "default": "sans",
+          "enum": [
+            "sans",
+            "serif",
+            "handwritten"
+          ],
+          "type": "string"
+        },
+        "font_size": {
+          "default": 16,
+          "maximum": 48,
+          "minimum": 10,
+          "type": "integer"
+        }
+      },
+      "type": "object",
+      "required": [
+        "id",
+        "order",
+        "speaker_character_id",
+        "kind",
+        "text",
+        "placement",
+        "tail",
+        "font_family",
+        "font_size"
+      ]
+    },
+    "WebtoonPanel": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "default": "",
+          "type": "string"
+        },
+        "order": {
+          "default": 1,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "story_beat": {
+          "default": "",
+          "type": "string"
+        },
+        "size": {
+          "default": "medium",
+          "enum": [
+            "splash",
+            "large",
+            "medium",
+            "small",
+            "inset"
+          ],
+          "type": "string"
+        },
+        "framing": {
+          "default": "",
+          "type": "string"
+        },
+        "composition": {
+          "default": "",
+          "type": "string"
+        },
+        "camera": {
+          "default": "",
+          "type": "string"
+        },
+        "pose_gaze": {
+          "default": "",
+          "type": "string"
+        },
+        "subject_character_ids": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "prop_ids": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "pacing": {
+          "default": "normal",
+          "enum": [
+            "normal",
+            "hold",
+            "impact",
+            "reveal"
+          ],
+          "type": "string"
+        },
+        "transition": {
+          "default": "",
+          "type": "string"
+        },
+        "gutter_after": {
+          "default": "normal",
+          "enum": [
+            "tight",
+            "normal",
+            "wide",
+            "scene_break"
+          ],
+          "type": "string"
+        },
+        "balloons": {
+          "items": {
+            "$ref": "#/$defs/WebtoonBalloon"
+          },
+          "type": "array"
+        },
+        "balloon": {
+          "default": "",
+          "type": "string"
+        },
+        "sfx": {
+          "default": "",
+          "type": "string"
+        },
+        "continuity_guards": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "image_prompt": {
+          "default": "",
+          "maxLength": 20000,
+          "type": "string"
+        },
+        "image_prompt_rationale": {
+          "default": "",
+          "maxLength": 2000,
+          "type": "string"
+        }
+      },
+      "type": "object",
+      "required": [
+        "id",
+        "order",
+        "story_beat",
+        "size",
+        "framing",
+        "composition",
+        "camera",
+        "pose_gaze",
+        "subject_character_ids",
+        "prop_ids",
+        "pacing",
+        "transition",
+        "gutter_after",
+        "balloons",
+        "balloon",
+        "sfx",
+        "continuity_guards",
+        "image_prompt",
+        "image_prompt_rationale"
+      ]
+    },
+    "WebtoonScriptLine": {
+      "additionalProperties": false,
+      "description": "Exact Moment-local lettering canon before it is laid out in panels.",
+      "properties": {
+        "order": {
+          "default": 1,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "speaker_character_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "kind": {
+          "default": "dialogue",
+          "enum": [
+            "dialogue",
+            "thought",
+            "shout",
+            "narration"
+          ],
+          "type": "string"
+        },
+        "text": {
+          "default": "",
+          "maxLength": 500,
+          "type": "string"
+        }
+      },
+      "type": "object",
+      "required": [
+        "order",
+        "speaker_character_id",
+        "kind",
+        "text"
+      ]
+    },
+    "error_body": {
+      "type": "object",
+      "properties": {
+        "error": {
+          "type": "object",
+          "properties": {
+            "code": {
+              "type": "string"
+            },
+            "cause": {
+              "type": "string"
+            },
+            "next_step": {
+              "type": "string"
+            },
+            "retryable": {
+              "type": "boolean"
+            },
+            "details": {
+              "type": "object"
+            }
+          },
+          "required": [
+            "code",
+            "cause"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "error"
+      ],
+      "additionalProperties": false,
+      "description": "Every refusal: 401/403 (auth), 404, 409 (changed since read; details.current), 413, 422, 429, 5xx."
+    }
+  }
+}

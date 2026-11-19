@@ -1,0 +1,28 @@
+# Model profiles for provider family 'krea2'.
+# Baseline profiles, first extracted from the 9miho provider manifests.
+# Raise `version` with any edit that can change a rendered prompt (schemas/README.md).
+provider: krea2
+profiles:
+  - id: krea2.identity_edit
+    version: 1
+    label: "Krea 2"
+    model: krea2
+    aliases: [krea2-identity-edit-v1.2]
+    dialect: image_prose
+    identity_from_reference: true
+    timed: false
+    max_chars: null
+    inputs:
+      - {name: image, type: image, role: reference_image, min_count: 1, max_count: 1, ordered: false}
+    mention_refs: []
+  - id: krea2.text_to_image
+    version: 1
+    label: "Krea 2"
+    model: krea2
+    aliases: [krea2-turbo-fp8]
+    dialect: image_prose
+    identity_from_reference: false
+    timed: false
+    max_chars: null
+    inputs: []
+    mention_refs: []

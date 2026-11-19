@@ -1,0 +1,164 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "project",
+  "description": "One project",
+  "method": "GET",
+  "path": "/api/projects/{project}",
+  "query": [],
+  "request": null,
+  "response": {
+    "$ref": "#/$defs/project_summary"
+  },
+  "error": {
+    "$ref": "#/$defs/error_body"
+  },
+  "$defs": {
+    "error_body": {
+      "type": "object",
+      "properties": {
+        "error": {
+          "type": "object",
+          "properties": {
+            "code": {
+              "type": "string"
+            },
+            "cause": {
+              "type": "string"
+            },
+            "next_step": {
+              "type": "string"
+            },
+            "retryable": {
+              "type": "boolean"
+            },
+            "details": {
+              "type": "object"
+            }
+          },
+          "required": [
+            "code",
+            "cause"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "error"
+      ],
+      "additionalProperties": false,
+      "description": "Every refusal: 401/403 (auth), 404, 409 (changed since read; details.current), 413, 422, 429, 5xx."
+    },
+    "member": {
+      "type": "object",
+      "properties": {
+        "member_id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "roles": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/story_role"
+          }
+        }
+      },
+      "required": [
+        "member_id",
+        "name",
+        "roles"
+      ],
+      "additionalProperties": false
+    },
+    "project_summary": {
+      "type": "object",
+      "properties": {
+        "project_id": {
+          "type": "string"
+        },
+        "tenant_id": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        },
+        "premise": {
+          "type": "string"
+        },
+        "format_kind": {
+          "type": "string"
+        },
+        "canon_revision": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "canon_number": {
+          "type": "integer"
+        },
+        "review_policy": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/review_policy"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "episode_count": {
+          "type": "integer"
+        },
+        "moment_count": {
+          "type": "integer"
+        },
+        "updated_at": {
+          "type": "integer"
+        },
+        "members": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/member"
+          }
+        }
+      },
+      "required": [
+        "project_id",
+        "tenant_id",
+        "title",
+        "premise",
+        "format_kind",
+        "canon_revision",
+        "canon_number",
+        "review_policy",
+        "episode_count",
+        "moment_count",
+        "updated_at",
+        "members"
+      ],
+      "additionalProperties": false
+    },
+    "review_policy": {
+      "description": "How much a person reviews. A work order may override the project's policy.",
+      "type": "string",
+      "enum": [
+        "exceptions_only",
+        "follow",
+        "blocking"
+      ]
+    },
+    "story_role": {
+      "description": "A member's role in a story project.",
+      "type": "string",
+      "enum": [
+        "writer",
+        "director",
+        "producer",
+        "reviewer",
+        "viewer"
+      ]
+    }
+  }
+}

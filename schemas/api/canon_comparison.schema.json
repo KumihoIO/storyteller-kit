@@ -1,0 +1,158 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "canon_comparison",
+  "description": "Field-level changes between two revisions",
+  "method": "GET",
+  "path": "/api/projects/{project}/canon/compare",
+  "query": [
+    "from",
+    "to"
+  ],
+  "request": null,
+  "response": {
+    "type": "object",
+    "properties": {
+      "from_revision": {
+        "type": "string"
+      },
+      "to_revision": {
+        "type": "string"
+      },
+      "revisions": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      },
+      "changes": {
+        "type": "array",
+        "items": {
+          "$ref": "#/$defs/field_change"
+        }
+      },
+      "changes_complete": {
+        "type": "boolean"
+      },
+      "staled_take_ids": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      },
+      "staled_known": {
+        "type": "boolean"
+      },
+      "reissued_order_ids": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      }
+    },
+    "required": [
+      "from_revision",
+      "to_revision",
+      "revisions",
+      "changes",
+      "changes_complete",
+      "staled_take_ids",
+      "staled_known",
+      "reissued_order_ids"
+    ],
+    "additionalProperties": false
+  },
+  "error": {
+    "$ref": "#/$defs/error_body"
+  },
+  "$defs": {
+    "canon_value": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "error_body": {
+      "type": "object",
+      "properties": {
+        "error": {
+          "type": "object",
+          "properties": {
+            "code": {
+              "type": "string"
+            },
+            "cause": {
+              "type": "string"
+            },
+            "next_step": {
+              "type": "string"
+            },
+            "retryable": {
+              "type": "boolean"
+            },
+            "details": {
+              "type": "object"
+            }
+          },
+          "required": [
+            "code",
+            "cause"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "error"
+      ],
+      "additionalProperties": false,
+      "description": "Every refusal: 401/403 (auth), 404, 409 (changed since read; details.current), 413, 422, 429, 5xx."
+    },
+    "field_change": {
+      "type": "object",
+      "properties": {
+        "node": {
+          "type": "string"
+        },
+        "node_title": {
+          "type": "string"
+        },
+        "field": {
+          "type": "string"
+        },
+        "op": {
+          "type": "string",
+          "enum": [
+            "added",
+            "changed",
+            "removed"
+          ]
+        },
+        "before": {
+          "$ref": "#/$defs/canon_value"
+        },
+        "after": {
+          "$ref": "#/$defs/canon_value"
+        }
+      },
+      "required": [
+        "node",
+        "node_title",
+        "field",
+        "op",
+        "before",
+        "after"
+      ],
+      "additionalProperties": false,
+      "description": "One field of one story node a revision changed; node keys as the ledger's depends_on."
+    }
+  }
+}

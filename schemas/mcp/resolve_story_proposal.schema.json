@@ -1,0 +1,94 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "resolve_story_proposal",
+  "description": "The resolve_story_proposal tool contract of 9miho-storyteller's MCP server (generated).",
+  "profiles": [
+    "granular",
+    "guided"
+  ],
+  "annotations": {
+    "readOnlyHint": false,
+    "destructiveHint": false,
+    "idempotentHint": false,
+    "openWorldHint": false
+  },
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "project_id": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 200,
+        "pattern": "^[^\\u0000-\\u001f]+$"
+      },
+      "idempotency_key": {
+        "type": "string",
+        "minLength": 8,
+        "maxLength": 128,
+        "pattern": "^[A-Za-z0-9._:-]+$",
+        "description": "A fresh UUID per new action; reuse only to retry the same call."
+      },
+      "proposal_id": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 200,
+        "pattern": "^[^\\u0000-\\u001f]+$"
+      },
+      "base_seq": {
+        "type": "integer",
+        "minimum": 0,
+        "description": "Needed with a patch."
+      },
+      "patch": {
+        "type": "object"
+      },
+      "summary": {
+        "type": "string",
+        "maxLength": 2000
+      }
+    },
+    "required": [
+      "project_id",
+      "idempotency_key",
+      "proposal_id"
+    ],
+    "additionalProperties": false
+  },
+  "outputSchema": {
+    "type": "object",
+    "properties": {
+      "proposal_id": {
+        "type": "string"
+      },
+      "status": {
+        "type": "string"
+      },
+      "draft_seq": {
+        "type": "integer"
+      },
+      "conflicts": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      },
+      "repeated": {
+        "type": "boolean"
+      },
+      "next_steps": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      }
+    },
+    "required": [
+      "proposal_id",
+      "status",
+      "draft_seq",
+      "conflicts",
+      "next_steps"
+    ],
+    "additionalProperties": false
+  }
+}

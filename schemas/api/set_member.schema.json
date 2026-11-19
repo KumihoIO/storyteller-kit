@@ -1,0 +1,101 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "set_member",
+  "description": "Person decision: PUT /api/projects/{project}/members/{member}",
+  "method": "PUT",
+  "path": "/api/projects/{project}/members/{member}",
+  "query": [],
+  "request": {
+    "type": "object",
+    "properties": {
+      "roles": {
+        "type": "array",
+        "items": {
+          "$ref": "#/$defs/story_role"
+        }
+      }
+    },
+    "required": [
+      "roles"
+    ],
+    "additionalProperties": false
+  },
+  "response": {
+    "type": "object",
+    "properties": {
+      "ok": {
+        "const": true
+      },
+      "applied": {
+        "const": true
+      },
+      "member": {
+        "type": "string"
+      },
+      "roles": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      }
+    },
+    "required": [
+      "ok",
+      "applied",
+      "member",
+      "roles"
+    ],
+    "additionalProperties": false
+  },
+  "error": {
+    "$ref": "#/$defs/error_body"
+  },
+  "$defs": {
+    "error_body": {
+      "type": "object",
+      "properties": {
+        "error": {
+          "type": "object",
+          "properties": {
+            "code": {
+              "type": "string"
+            },
+            "cause": {
+              "type": "string"
+            },
+            "next_step": {
+              "type": "string"
+            },
+            "retryable": {
+              "type": "boolean"
+            },
+            "details": {
+              "type": "object"
+            }
+          },
+          "required": [
+            "code",
+            "cause"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "error"
+      ],
+      "additionalProperties": false,
+      "description": "Every refusal: 401/403 (auth), 404, 409 (changed since read; details.current), 413, 422, 429, 5xx."
+    },
+    "story_role": {
+      "description": "A member's role in a story project.",
+      "type": "string",
+      "enum": [
+        "writer",
+        "director",
+        "producer",
+        "reviewer",
+        "viewer"
+      ]
+    }
+  }
+}

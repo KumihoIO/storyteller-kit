@@ -1,0 +1,44 @@
+# Model profiles for provider family 'kling'.
+# Baseline profiles, first extracted from the 9miho provider manifests.
+# Raise `version` with any edit that can change a rendered prompt (schemas/README.md).
+provider: kling
+profiles:
+  - id: kling.image_to_video
+    version: 1
+    label: "Kling 3.0"
+    model: kling-3.0
+    aliases: []
+    dialect: shot_list_prose
+    identity_from_reference: false
+    timed: true
+    max_chars: 3072
+    inputs:
+      - {name: image, type: image, role: first_frame, min_count: 1, max_count: 1, ordered: false}
+      - {name: last_frame, type: image, role: last_frame, min_count: 0, max_count: 1, ordered: false}
+    mention_refs: []
+  - id: kling.reference_to_video
+    version: 1
+    label: "Kling 3.0 Omni"
+    model: kling-3.0-omni
+    aliases: []
+    dialect: shot_list_prose
+    identity_from_reference: true
+    timed: true
+    max_chars: 3072
+    inputs:
+      - {name: refs, type: image, role: reference_image, min_count: 0, max_count: 7, ordered: true}
+      - {name: reference_video, type: video, role: reference_video, min_count: 0, max_count: 1, ordered: true}
+    mention_refs:
+      - {label: image_, ports: [refs]}
+      - {label: video_, ports: [reference_video]}
+  - id: kling.text_to_video
+    version: 1
+    label: "Kling 3.0"
+    model: kling-3.0
+    aliases: []
+    dialect: shot_list_prose
+    identity_from_reference: false
+    timed: true
+    max_chars: 3072
+    inputs: []
+    mention_refs: []

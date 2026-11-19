@@ -1,0 +1,544 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "arc_page",
+  "description": "One character's emotional arc with flags",
+  "method": "GET",
+  "path": "/api/projects/{project}/characters/{character}/arc",
+  "query": [
+    "episode_id",
+    "scene_id",
+    "cursor",
+    "limit"
+  ],
+  "request": null,
+  "response": {
+    "type": "object",
+    "properties": {
+      "revision": {
+        "type": "string"
+      },
+      "items": {
+        "type": "array",
+        "items": {
+          "$ref": "#/$defs/arc_entry"
+        }
+      },
+      "total": {
+        "type": [
+          "integer",
+          "null"
+        ]
+      },
+      "more_available": {
+        "type": "boolean"
+      },
+      "next_cursor": {
+        "type": [
+          "string",
+          "null"
+        ]
+      }
+    },
+    "required": [
+      "revision",
+      "items",
+      "total",
+      "more_available",
+      "next_cursor"
+    ],
+    "additionalProperties": false,
+    "description": "One page. Pass next_cursor back as `cursor` for the next; null when there is no more."
+  },
+  "error": {
+    "$ref": "#/$defs/error_body"
+  },
+  "$defs": {
+    "StateDelta": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "default": "",
+          "type": "string"
+        },
+        "character_id": {
+          "default": "",
+          "type": "string"
+        },
+        "dimension": {
+          "default": "psychological",
+          "enum": [
+            "physical",
+            "psychological",
+            "knowledge",
+            "relationship"
+          ],
+          "type": "string"
+        },
+        "before": {
+          "default": "",
+          "type": "string"
+        },
+        "after": {
+          "default": "",
+          "type": "string"
+        },
+        "risk": {
+          "default": "safe",
+          "enum": [
+            "safe",
+            "review"
+          ],
+          "type": "string"
+        },
+        "approved": {
+          "default": false,
+          "type": "boolean"
+        }
+      },
+      "type": "object",
+      "required": [
+        "id",
+        "character_id",
+        "dimension",
+        "before",
+        "after",
+        "risk",
+        "approved"
+      ]
+    },
+    "arc_cause": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "delta",
+            "snapshot"
+          ]
+        },
+        "id": {
+          "type": "string"
+        },
+        "dimension": {
+          "type": "string",
+          "enum": [
+            "physical",
+            "psychological",
+            "knowledge",
+            "relationships"
+          ]
+        },
+        "before": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "after": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "kind",
+        "id",
+        "dimension",
+        "before",
+        "after"
+      ],
+      "additionalProperties": false
+    },
+    "arc_entry": {
+      "type": "object",
+      "properties": {
+        "momentId": {
+          "type": "string"
+        },
+        "index": {
+          "type": "integer"
+        },
+        "episodeId": {
+          "type": "string"
+        },
+        "sceneId": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "participates": {
+          "type": "boolean"
+        },
+        "previous": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/known_state"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "state": {
+          "$ref": "#/$defs/known_state"
+        },
+        "changed": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "physical",
+              "psychological",
+              "knowledge",
+              "relationships"
+            ]
+          }
+        },
+        "changes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/StateDelta"
+          }
+        },
+        "causes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/arc_cause"
+          }
+        },
+        "pendingChanges": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/StateDelta"
+          }
+        },
+        "notYetKnown": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "fact": {
+                "type": "string"
+              },
+              "learnedAtMomentId": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "fact",
+              "learnedAtMomentId"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "relations": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/arc_relation"
+          }
+        },
+        "flags": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "unexplained_change",
+              "premature_knowledge",
+              "conflict",
+              "unknown",
+              "pending_change"
+            ]
+          }
+        },
+        "issues": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/arc_issue"
+          }
+        }
+      },
+      "required": [
+        "momentId",
+        "index",
+        "episodeId",
+        "sceneId",
+        "participates",
+        "previous",
+        "state",
+        "changed",
+        "changes",
+        "causes",
+        "pendingChanges",
+        "notYetKnown",
+        "relations",
+        "flags",
+        "issues"
+      ],
+      "additionalProperties": false,
+      "description": "One point of a character's arc: state after the Moment, causes and deterministic flags."
+    },
+    "arc_issue": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "unexplained_change"
+            },
+            "dimension": {
+              "type": "string",
+              "enum": [
+                "physical",
+                "psychological",
+                "knowledge",
+                "relationships"
+              ]
+            },
+            "before": {
+              "type": "string"
+            },
+            "after": {
+              "type": "string"
+            },
+            "snapshotId": {
+              "type": [
+                "string",
+                "null"
+              ]
+            }
+          },
+          "required": [
+            "kind",
+            "dimension",
+            "before",
+            "after",
+            "snapshotId"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "premature_knowledge"
+            },
+            "deltaId": {
+              "type": "string"
+            },
+            "fact": {
+              "type": "string"
+            },
+            "learnedAtMomentId": {
+              "type": "string"
+            },
+            "approved": {
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "kind",
+            "deltaId",
+            "fact",
+            "learnedAtMomentId",
+            "approved"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "conflict"
+            },
+            "dimension": {
+              "type": "string",
+              "enum": [
+                "physical",
+                "psychological",
+                "knowledge",
+                "relationships"
+              ]
+            },
+            "values": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          "required": [
+            "kind",
+            "dimension",
+            "values"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "unknown"
+            },
+            "dimensions": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "physical",
+                  "psychological",
+                  "knowledge",
+                  "relationships"
+                ]
+              }
+            }
+          },
+          "required": [
+            "kind",
+            "dimensions"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "pending_change"
+            },
+            "deltaId": {
+              "type": "string"
+            },
+            "dimension": {
+              "type": "string",
+              "enum": [
+                "physical",
+                "psychological",
+                "knowledge",
+                "relationships"
+              ]
+            },
+            "before": {
+              "type": "string"
+            },
+            "after": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "kind",
+            "deltaId",
+            "dimension",
+            "before",
+            "after"
+          ],
+          "additionalProperties": false
+        }
+      ]
+    },
+    "arc_relation": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "otherCharacterId": {
+          "type": "string"
+        },
+        "kind": {
+          "type": "string"
+        },
+        "publicState": {
+          "type": "string"
+        },
+        "privateState": {
+          "type": "string"
+        },
+        "trust": {
+          "type": "number"
+        },
+        "tension": {
+          "type": "number"
+        }
+      },
+      "required": [
+        "id",
+        "otherCharacterId",
+        "kind",
+        "publicState",
+        "privateState",
+        "trust",
+        "tension"
+      ],
+      "additionalProperties": false
+    },
+    "error_body": {
+      "type": "object",
+      "properties": {
+        "error": {
+          "type": "object",
+          "properties": {
+            "code": {
+              "type": "string"
+            },
+            "cause": {
+              "type": "string"
+            },
+            "next_step": {
+              "type": "string"
+            },
+            "retryable": {
+              "type": "boolean"
+            },
+            "details": {
+              "type": "object"
+            }
+          },
+          "required": [
+            "code",
+            "cause"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "error"
+      ],
+      "additionalProperties": false,
+      "description": "Every refusal: 401/403 (auth), 404, 409 (changed since read; details.current), 413, 422, 429, 5xx."
+    },
+    "known_state": {
+      "type": "object",
+      "properties": {
+        "physical": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "psychological": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "knowledge": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "relationships": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "required": [
+        "physical",
+        "psychological",
+        "knowledge",
+        "relationships"
+      ],
+      "additionalProperties": false
+    }
+  }
+}

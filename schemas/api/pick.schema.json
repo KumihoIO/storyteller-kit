@@ -1,0 +1,92 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "pick",
+  "description": "Person decision: POST /api/projects/{project}/contention/pick",
+  "method": "POST",
+  "path": "/api/projects/{project}/contention/pick",
+  "query": [],
+  "request": {
+    "type": "object",
+    "properties": {
+      "take_id": {
+        "type": "string"
+      },
+      "expected_seq": {
+        "type": "integer",
+        "minimum": 0
+      }
+    },
+    "required": [
+      "take_id"
+    ],
+    "additionalProperties": false
+  },
+  "response": {
+    "type": "object",
+    "properties": {
+      "ok": {
+        "const": true
+      },
+      "applied": {
+        "const": true
+      },
+      "take": {
+        "type": "object",
+        "additionalProperties": true
+      },
+      "closed": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      }
+    },
+    "required": [
+      "ok",
+      "applied",
+      "take",
+      "closed"
+    ],
+    "additionalProperties": false
+  },
+  "error": {
+    "$ref": "#/$defs/error_body"
+  },
+  "$defs": {
+    "error_body": {
+      "type": "object",
+      "properties": {
+        "error": {
+          "type": "object",
+          "properties": {
+            "code": {
+              "type": "string"
+            },
+            "cause": {
+              "type": "string"
+            },
+            "next_step": {
+              "type": "string"
+            },
+            "retryable": {
+              "type": "boolean"
+            },
+            "details": {
+              "type": "object"
+            }
+          },
+          "required": [
+            "code",
+            "cause"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "error"
+      ],
+      "additionalProperties": false,
+      "description": "Every refusal: 401/403 (auth), 404, 409 (changed since read; details.current), 413, 422, 429, 5xx."
+    }
+  }
+}

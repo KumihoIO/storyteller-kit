@@ -1,0 +1,118 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "take_comparison",
+  "description": "Prompt facts of several takes",
+  "method": "GET",
+  "path": "/api/projects/{project}/takes/compare",
+  "query": [
+    "take_ids"
+  ],
+  "request": null,
+  "response": {
+    "type": "object",
+    "properties": {
+      "items": {
+        "type": "array",
+        "items": {
+          "$ref": "#/$defs/take_comparison"
+        }
+      }
+    },
+    "required": [
+      "items"
+    ],
+    "additionalProperties": false
+  },
+  "error": {
+    "$ref": "#/$defs/error_body"
+  },
+  "$defs": {
+    "error_body": {
+      "type": "object",
+      "properties": {
+        "error": {
+          "type": "object",
+          "properties": {
+            "code": {
+              "type": "string"
+            },
+            "cause": {
+              "type": "string"
+            },
+            "next_step": {
+              "type": "string"
+            },
+            "retryable": {
+              "type": "boolean"
+            },
+            "details": {
+              "type": "object"
+            }
+          },
+          "required": [
+            "code",
+            "cause"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "error"
+      ],
+      "additionalProperties": false,
+      "description": "Every refusal: 401/403 (auth), 404, 409 (changed since read; details.current), 413, 422, 429, 5xx."
+    },
+    "take_comparison": {
+      "type": "object",
+      "properties": {
+        "take_id": {
+          "type": "string"
+        },
+        "rendered_prompt_sha256": {
+          "type": "string"
+        },
+        "final_prompt_sha256": {
+          "type": "string"
+        },
+        "prompt_edited": {
+          "type": "boolean"
+        },
+        "prompt_summary": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "rendered_prompt": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "final_prompt": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "prompt_warnings": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "required": [
+        "take_id",
+        "rendered_prompt_sha256",
+        "final_prompt_sha256",
+        "prompt_edited",
+        "prompt_summary",
+        "rendered_prompt",
+        "final_prompt",
+        "prompt_warnings"
+      ],
+      "additionalProperties": false
+    }
+  }
+}

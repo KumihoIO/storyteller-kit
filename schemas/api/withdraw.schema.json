@@ -1,0 +1,96 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "withdraw",
+  "description": "Person decision: POST /api/projects/{project}/orders/{order}/withdraw",
+  "method": "POST",
+  "path": "/api/projects/{project}/orders/{order}/withdraw",
+  "query": [],
+  "request": {
+    "type": "object",
+    "properties": {
+      "expected_seq": {
+        "type": "integer",
+        "minimum": 0
+      }
+    },
+    "additionalProperties": false
+  },
+  "response": {
+    "type": "object",
+    "properties": {
+      "ok": {
+        "const": true
+      },
+      "applied": {
+        "const": true
+      },
+      "order_id": {
+        "type": "string"
+      },
+      "order_state": {
+        "$ref": "#/$defs/order_state"
+      }
+    },
+    "required": [
+      "ok",
+      "applied",
+      "order_id",
+      "order_state"
+    ],
+    "additionalProperties": false
+  },
+  "error": {
+    "$ref": "#/$defs/error_body"
+  },
+  "$defs": {
+    "error_body": {
+      "type": "object",
+      "properties": {
+        "error": {
+          "type": "object",
+          "properties": {
+            "code": {
+              "type": "string"
+            },
+            "cause": {
+              "type": "string"
+            },
+            "next_step": {
+              "type": "string"
+            },
+            "retryable": {
+              "type": "boolean"
+            },
+            "details": {
+              "type": "object"
+            }
+          },
+          "required": [
+            "code",
+            "cause"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "error"
+      ],
+      "additionalProperties": false,
+      "description": "Every refusal: 401/403 (auth), 404, 409 (changed since read; details.current), 413, 422, 429, 5xx."
+    },
+    "order_state": {
+      "description": "Where a work order is in its life. issued, directed, rendered and submitted are working states (the assignee owes work and a lease can expire); approved, rejected and abandoned are terminal.",
+      "type": "string",
+      "enum": [
+        "issued",
+        "directed",
+        "rendered",
+        "submitted",
+        "recorded",
+        "approved",
+        "rejected",
+        "abandoned"
+      ]
+    }
+  }
+}

@@ -1,0 +1,30 @@
+# Model profiles for provider family 'veo'.
+# Baseline profiles, first extracted from the 9miho provider manifests.
+# Raise `version` with any edit that can change a rendered prompt (schemas/README.md).
+provider: veo
+profiles:
+  - id: veo.image_to_video
+    version: 1
+    label: "Veo 3.1"
+    model: veo-3.1
+    aliases: [veo-3.1-fast, veo-3.1-lite]
+    dialect: cinematic_prose
+    identity_from_reference: false
+    timed: true
+    max_chars: 2000
+    inputs:
+      - {name: image, type: image, role: first_frame, min_count: 1, max_count: 1, ordered: false}
+      - {name: last_frame, type: image, role: last_frame, min_count: 0, max_count: 1, ordered: false}
+    mention_refs: []
+  - id: veo.reference_to_video
+    version: 1
+    label: "Veo 3.1"
+    model: veo-3.1
+    aliases: []
+    dialect: cinematic_prose
+    identity_from_reference: true
+    timed: true
+    max_chars: 2000
+    inputs:
+      - {name: refs, type: image, role: reference_image, min_count: 1, max_count: 3, ordered: false}
+    mention_refs: []

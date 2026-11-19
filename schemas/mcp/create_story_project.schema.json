@@ -1,0 +1,73 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "create_story_project",
+  "description": "The create_story_project tool contract of 9miho-storyteller's MCP server (generated).",
+  "profiles": [
+    "granular",
+    "guided"
+  ],
+  "annotations": {
+    "readOnlyHint": false,
+    "destructiveHint": false,
+    "idempotentHint": true,
+    "openWorldHint": false
+  },
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "project_id": {
+        "type": "string",
+        "pattern": "^[a-z0-9][a-z0-9-]{1,62}[a-z0-9]$"
+      },
+      "idempotency_key": {
+        "type": "string",
+        "minLength": 8,
+        "maxLength": 128,
+        "pattern": "^[A-Za-z0-9._:-]+$",
+        "description": "A fresh UUID per new action; reuse only to retry the same call."
+      },
+      "title": {
+        "type": "string",
+        "maxLength": 200
+      },
+      "document": {
+        "type": "object",
+        "description": "An existing story document to import."
+      }
+    },
+    "required": [
+      "project_id",
+      "idempotency_key"
+    ],
+    "additionalProperties": false
+  },
+  "outputSchema": {
+    "type": "object",
+    "properties": {
+      "project_id": {
+        "type": "string"
+      },
+      "draft_seq": {
+        "type": "integer"
+      },
+      "your_roles": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      },
+      "next_steps": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      }
+    },
+    "required": [
+      "project_id",
+      "draft_seq",
+      "next_steps"
+    ],
+    "additionalProperties": false
+  }
+}

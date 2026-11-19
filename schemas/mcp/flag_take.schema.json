@@ -1,0 +1,70 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "flag_take",
+  "description": "The flag_take tool contract of 9miho-storyteller's MCP server (generated).",
+  "profiles": [
+    "granular",
+    "guided"
+  ],
+  "annotations": {
+    "readOnlyHint": false,
+    "destructiveHint": false,
+    "idempotentHint": true,
+    "openWorldHint": false
+  },
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "project_id": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 200,
+        "pattern": "^[^\\u0000-\\u001f]+$"
+      },
+      "idempotency_key": {
+        "type": "string",
+        "minLength": 8,
+        "maxLength": 128,
+        "pattern": "^[A-Za-z0-9._:-]+$",
+        "description": "A fresh UUID per new action; reuse only to retry the same call."
+      },
+      "take_id": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 200,
+        "pattern": "^[^\\u0000-\\u001f]+$"
+      },
+      "reason": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 1000
+      }
+    },
+    "required": [
+      "project_id",
+      "idempotency_key",
+      "take_id",
+      "reason"
+    ],
+    "additionalProperties": false
+  },
+  "outputSchema": {
+    "type": "object",
+    "properties": {
+      "take_id": {
+        "type": "string"
+      },
+      "flagged": {
+        "type": "boolean"
+      },
+      "meaning": {
+        "type": "string"
+      }
+    },
+    "required": [
+      "take_id",
+      "flagged"
+    ],
+    "additionalProperties": false
+  }
+}

@@ -1,0 +1,29 @@
+# Model profiles for provider family 'gpt_image'.
+# Baseline profiles, first extracted from the 9miho provider manifests.
+# Raise `version` with any edit that can change a rendered prompt (schemas/README.md).
+provider: gpt_image
+profiles:
+  - id: gpt_image_1.compose
+    version: 1
+    label: "GPT Image 1"
+    model: gpt-image-1
+    aliases: []
+    dialect: image_prose
+    identity_from_reference: false
+    timed: false
+    max_chars: null
+    inputs:
+      - {name: refs, type: image, role: reference_image, min_count: 0, max_count: 4, ordered: false}
+    mention_refs: []
+  - id: gpt_image_2.compose
+    version: 1
+    label: "GPT Image 2"
+    model: gpt-image-2
+    aliases: []
+    dialect: image_prose
+    identity_from_reference: false
+    timed: false
+    max_chars: null
+    inputs:
+      - {name: refs, type: image, role: reference_image, min_count: 0, max_count: 4, ordered: false}
+    mention_refs: []

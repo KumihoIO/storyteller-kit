@@ -1,0 +1,94 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "supersede",
+  "description": "Person decision: POST /api/projects/{project}/orders/{order}/supersede",
+  "method": "POST",
+  "path": "/api/projects/{project}/orders/{order}/supersede",
+  "query": [],
+  "request": {
+    "type": "object",
+    "properties": {
+      "notes": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 4000
+      },
+      "take_id": {
+        "type": "string"
+      },
+      "expected_seq": {
+        "type": "integer",
+        "minimum": 0
+      }
+    },
+    "required": [
+      "notes"
+    ],
+    "additionalProperties": false
+  },
+  "response": {
+    "type": "object",
+    "properties": {
+      "ok": {
+        "const": true
+      },
+      "applied": {
+        "const": true
+      },
+      "take": {
+        "type": "object",
+        "additionalProperties": true
+      },
+      "reissued_as": {
+        "type": "string"
+      }
+    },
+    "required": [
+      "ok",
+      "applied",
+      "take",
+      "reissued_as"
+    ],
+    "additionalProperties": false
+  },
+  "error": {
+    "$ref": "#/$defs/error_body"
+  },
+  "$defs": {
+    "error_body": {
+      "type": "object",
+      "properties": {
+        "error": {
+          "type": "object",
+          "properties": {
+            "code": {
+              "type": "string"
+            },
+            "cause": {
+              "type": "string"
+            },
+            "next_step": {
+              "type": "string"
+            },
+            "retryable": {
+              "type": "boolean"
+            },
+            "details": {
+              "type": "object"
+            }
+          },
+          "required": [
+            "code",
+            "cause"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "error"
+      ],
+      "additionalProperties": false,
+      "description": "Every refusal: 401/403 (auth), 404, 409 (changed since read; details.current), 413, 422, 429, 5xx."
+    }
+  }
+}

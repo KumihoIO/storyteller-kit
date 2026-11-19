@@ -1,0 +1,94 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "set_policy",
+  "description": "Person decision: PUT /api/projects/{project}/policy",
+  "method": "PUT",
+  "path": "/api/projects/{project}/policy",
+  "query": [],
+  "request": {
+    "type": "object",
+    "properties": {
+      "review_policy": {
+        "$ref": "#/$defs/review_policy"
+      },
+      "member_cap": {
+        "type": "integer",
+        "minimum": 0
+      }
+    },
+    "additionalProperties": false
+  },
+  "response": {
+    "type": "object",
+    "properties": {
+      "ok": {
+        "const": true
+      },
+      "applied": {
+        "const": true
+      },
+      "review_policy": {
+        "$ref": "#/$defs/review_policy"
+      },
+      "member_cap": {
+        "type": "integer"
+      }
+    },
+    "required": [
+      "ok",
+      "applied",
+      "review_policy",
+      "member_cap"
+    ],
+    "additionalProperties": false
+  },
+  "error": {
+    "$ref": "#/$defs/error_body"
+  },
+  "$defs": {
+    "error_body": {
+      "type": "object",
+      "properties": {
+        "error": {
+          "type": "object",
+          "properties": {
+            "code": {
+              "type": "string"
+            },
+            "cause": {
+              "type": "string"
+            },
+            "next_step": {
+              "type": "string"
+            },
+            "retryable": {
+              "type": "boolean"
+            },
+            "details": {
+              "type": "object"
+            }
+          },
+          "required": [
+            "code",
+            "cause"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "error"
+      ],
+      "additionalProperties": false,
+      "description": "Every refusal: 401/403 (auth), 404, 409 (changed since read; details.current), 413, 422, 429, 5xx."
+    },
+    "review_policy": {
+      "description": "How much a person reviews. A work order may override the project's policy.",
+      "type": "string",
+      "enum": [
+        "exceptions_only",
+        "follow",
+        "blocking"
+      ]
+    }
+  }
+}

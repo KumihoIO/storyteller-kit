@@ -1,0 +1,201 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://kumiho.io/9miho-storyteller/fixtures/qc/take_labels.schema.json",
+  "title": "Take QC labels",
+  "description": "Per-take quality-check labels for a set of generated video takes. Used as ground truth (once confirmed by a person) to measure automatic checkers. Media is never stored in the repository; paths are relative to a root variable resolved on the host.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "set_id", "media_root_var", "items", "takes"],
+  "properties": {
+    "schema_version": { "const": "qc-take-labels/v1" },
+    "set_id": { "type": "string", "minLength": 1, "description": "Identifier of the take set (free text, project-specific)." },
+    "description": { "type": "string" },
+    "media_root_var": {
+      "type": "string",
+      "pattern": "^[A-Z][A-Z0-9_]*$",
+      "description": "Name of the environment variable that holds the media root, e.g. QC_ROOT. Media paths are written as ${VAR}/..."
+    },
+    "created": { "type": "string", "format": "date" },
+    "tools": {
+      "type": "array",
+      "description": "Measurement tools used for the draft (name and version).",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["name"],
+        "properties": { "name": { "type": "string" }, "version": { "type": "string" }, "note": { "type": "string" } }
+      }
+    },
+    "items": {
+      "type": "array",
+      "description": "Checklist item kinds covered by this file. Every take carries a label for each.",
+      "items": { "$ref": "#/$defs/item_kind" },
+      "uniqueItems": true,
+      "minItems": 1
+    },
+    "takes": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/take" }
+    }
+  },
+  "$defs": {
+    "item_kind": {
+      "enum": [
+        "identity",
+        "hair",
+        "costume",
+        "prop_shape",
+        "on_screen_text",
+        "motion",
+        "camera",
+        "dialogue",
+        "lipsync",
+        "acting",
+        "format"
+      ]
+    },
+    "verdict": { "enum": ["pass", "flag", "unknown"] },
+    "confidence": { "enum": ["high", "medium", "low"] },
+    "labeled_by": { "enum": ["agent-draft", "person"] },
+    "media_path": {
+      "type": "string",
+      "pattern": "^\\$\\{[A-Z][A-Z0-9_]*\\}/",
+      "description": "Path relative to the media root variable, e.g. ${QC_ROOT}/c01_t1.mp4"
+    },
+    "box": {
+      "type": "array",
+      "description": "Crop box in normalized frame coordinates [x0, y0, x1, y1], each 0..1.",
+      "items": { "type": "number", "minimum": 0, "maximum": 1 },
+      "minItems": 4,
+      "maxItems": 4
+    },
+    "evidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "frame_times_s": { "type": "array", "items": { "type": "number", "minimum": 0 } },
+        "boxes": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["t_s", "box"],
+            "properties": {
+              "t_s": { "type": "number", "minimum": 0 },
+              "box": { "$ref": "#/$defs/box" },
+              "label": { "type": "string" }
+            }
+          }
+        },
+        "transcript_excerpt": { "type": "string" },
+        "measurements": {
+          "type": "object",
+          "description": "Raw numbers behind the verdict (tool-specific keys).",
+          "additionalProperties": { "type": ["number", "string", "boolean", "null"] }
+        },
+        "media": {
+          "type": "array",
+          "description": "Evidence media (frames, crops) relative to the root variable or a host-local path; never committed.",
+          "items": { "type": "string" }
+        }
+      }
+    },
+    "label": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["verdict", "confidence", "labeled_by", "confirmed"],
+      "properties": {
+        "verdict": { "$ref": "#/$defs/verdict" },
+        "confidence": { "$ref": "#/$defs/confidence" },
+        "evidence": { "$ref": "#/$defs/evidence" },
+        "note": { "type": "string" },
+        "labeled_by": { "$ref": "#/$defs/labeled_by" },
+        "confirmed": { "type": "boolean" },
+        "applicable": {
+          "type": "boolean",
+          "default": true,
+          "description": "false when the item has nothing to check in this take (e.g. identity in a shot with no people). Such labels carry verdict pass and are excluded from agreement metrics."
+        },
+        "source": {
+          "enum": ["server", "decision", "memory", "label-set"],
+          "description": "Where the checklist item came from: the server, a past decision, a recalled memory, or the label set itself."
+        },
+        "recalled": {
+          "type": "array",
+          "description": "Krefs of QC memories used for this verdict.",
+          "items": { "type": "string" }
+        }
+      }
+    },
+    "technical": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["duration_s", "width", "height", "fps", "has_audio"],
+      "properties": {
+        "duration_s": { "type": "number", "minimum": 0 },
+        "width": { "type": "integer", "minimum": 1 },
+        "height": { "type": "integer", "minimum": 1 },
+        "fps": { "type": "number", "minimum": 0 },
+        "frames": { "type": "integer", "minimum": 0 },
+        "has_audio": { "type": "boolean" },
+        "audio_codec": { "type": ["string", "null"] },
+        "audio_sample_rate": { "type": ["integer", "null"] },
+        "mean_volume_db": { "type": ["number", "null"] },
+        "max_volume_db": { "type": ["number", "null"] }
+      }
+    },
+    "generation": {
+      "type": "object",
+      "description": "What the take was asked to be, recovered from generator metadata. Free-form beyond the listed keys.",
+      "properties": {
+        "model": { "type": "string" },
+        "loras": { "type": "array", "items": { "type": "array", "prefixItems": [{ "type": "string" }, { "type": "number" }] } },
+        "seed": { "type": "integer" },
+        "requested_duration_s": { "type": "number" },
+        "base_resolution": { "type": "array", "items": { "type": "integer" }, "minItems": 2, "maxItems": 2 },
+        "ref_image_size": { "type": "string" },
+        "references": { "type": "array", "items": { "type": "string" } },
+        "prompt_summary": { "type": "string" },
+        "prompt_sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+        "intended_subjects": { "type": "array", "items": { "type": "string" } },
+        "dialogue_script": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "take": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["take_key", "group", "media", "technical", "labels"],
+      "properties": {
+        "take_key": { "type": "string", "minLength": 1 },
+        "group": { "type": "string", "description": "Grouping key, usually the cut / Moment the take belongs to." },
+        "take_index": { "type": "integer", "minimum": 1 },
+        "media": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["video"],
+          "properties": {
+            "video": { "$ref": "#/$defs/media_path" },
+            "video_with_audio": { "$ref": "#/$defs/media_path" },
+            "still": { "$ref": "#/$defs/media_path" }
+          }
+        },
+        "technical": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["video"],
+          "properties": {
+            "video": { "$ref": "#/$defs/technical" },
+            "video_with_audio": { "$ref": "#/$defs/technical" }
+          }
+        },
+        "generation": { "$ref": "#/$defs/generation" },
+        "labels": {
+          "type": "object",
+          "propertyNames": { "$ref": "#/$defs/item_kind" },
+          "additionalProperties": { "$ref": "#/$defs/label" }
+        },
+        "overall_note": { "type": "string" }
+      }
+    }
+  }
+}

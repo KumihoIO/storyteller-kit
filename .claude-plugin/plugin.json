@@ -1,0 +1,13 @@
+{
+  "name": "storyteller",
+  "version": "0.1.0",
+  "description": "9miho Storyteller host skills: connect to the hosted Storyteller MCP server and follow storyteller_start / story_step.",
+  "author": {
+    "name": "Kumiho",
+    "url": "https://kumiho.io"
+  },
+  "license": "Apache-2.0",
+  "skills": [
+    "./skills/storyteller"
+  ]
+}

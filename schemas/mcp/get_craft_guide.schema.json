@@ -1,0 +1,74 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "get_craft_guide",
+  "description": "The get_craft_guide tool contract of 9miho-storyteller's MCP server (generated).",
+  "profiles": [
+    "granular",
+    "guided"
+  ],
+  "annotations": {
+    "readOnlyHint": true,
+    "destructiveHint": false,
+    "idempotentHint": true,
+    "openWorldHint": false
+  },
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "track": {
+        "type": "string",
+        "enum": [
+          "acting",
+          "staging",
+          "image",
+          "production"
+        ]
+      },
+      "page": {
+        "type": "integer",
+        "minimum": 1
+      }
+    },
+    "required": [
+      "track"
+    ],
+    "additionalProperties": false
+  },
+  "outputSchema": {
+    "type": "object",
+    "properties": {
+      "track": {
+        "type": "string"
+      },
+      "page": {
+        "type": "integer"
+      },
+      "pages": {
+        "type": "integer"
+      },
+      "more_available": {
+        "type": "boolean"
+      },
+      "next_page": {
+        "type": [
+          "integer",
+          "null"
+        ]
+      },
+      "text": {
+        "type": "string"
+      },
+      "used_for": {
+        "type": "object"
+      }
+    },
+    "required": [
+      "track",
+      "page",
+      "pages",
+      "text",
+      "more_available"
+    ],
+    "additionalProperties": false
+  }
+}

@@ -1,0 +1,46 @@
+# Model profiles for provider family 'minimax'.
+# Baseline profiles, first extracted from the 9miho provider manifests.
+# Raise `version` with any edit that can change a rendered prompt (schemas/README.md).
+provider: minimax
+profiles:
+  - id: minimax.first_last_to_video
+    version: 1
+    label: "MiniMax H3 · API"
+    model: minimax-h3-api
+    aliases: []
+    dialect: minimax_h3_keyed
+    identity_from_reference: false
+    timed: true
+    max_chars: 7000
+    inputs:
+      - {name: image, type: image, role: first_frame, min_count: 0, max_count: 1, ordered: false}
+      - {name: last_frame, type: image, role: last_frame, min_count: 0, max_count: 1, ordered: false}
+    mention_refs: []
+  - id: minimax.reference_to_video
+    version: 1
+    label: "MiniMax H3 · API"
+    model: minimax-h3-api
+    aliases: []
+    dialect: minimax_h3_keyed
+    identity_from_reference: true
+    timed: true
+    max_chars: 7000
+    inputs:
+      - {name: refs, type: image, role: reference_image, min_count: 0, max_count: 9, ordered: true}
+      - {name: video_refs, type: video, role: reference_video, min_count: 0, max_count: 3, ordered: true, guidance: [camera_motion]}
+      - {name: audio_refs, type: audio, role: reference_audio, min_count: 0, max_count: 3, ordered: true}
+    mention_refs:
+      - {label: Picture, ports: [refs]}
+      - {label: Video, ports: [video_refs]}
+      - {label: Audio, ports: [audio_refs]}
+  - id: minimax.text_to_video
+    version: 1
+    label: "MiniMax H3 · API"
+    model: minimax-h3-api
+    aliases: []
+    dialect: minimax_h3_keyed
+    identity_from_reference: false
+    timed: true
+    max_chars: 7000
+    inputs: []
+    mention_refs: []

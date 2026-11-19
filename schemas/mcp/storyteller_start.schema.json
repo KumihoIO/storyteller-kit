@@ -1,0 +1,97 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "storyteller_start",
+  "description": "The storyteller_start tool contract of 9miho-storyteller's MCP server (generated).",
+  "profiles": [
+    "granular",
+    "guided"
+  ],
+  "annotations": {
+    "readOnlyHint": true,
+    "destructiveHint": false,
+    "idempotentHint": true,
+    "openWorldHint": false
+  },
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "wants": {
+        "type": "string",
+        "enum": [
+          "text",
+          "webtoon",
+          "video"
+        ],
+        "description": "What the user wants to make."
+      },
+      "generation_models": {
+        "type": "array",
+        "maxItems": 20,
+        "items": {
+          "type": "string",
+          "maxLength": 200
+        },
+        "description": "Model names your generation connectors offer, if any."
+      },
+      "connectors": {
+        "type": "array",
+        "maxItems": 20,
+        "items": {
+          "type": "string",
+          "maxLength": 200
+        },
+        "description": "Names of your generation connectors (informational)."
+      }
+    },
+    "required": [],
+    "additionalProperties": false
+  },
+  "outputSchema": {
+    "type": "object",
+    "properties": {
+      "you": {
+        "type": "object"
+      },
+      "mode": {
+        "type": "string"
+      },
+      "projects": {
+        "type": "array",
+        "items": {
+          "type": "object"
+        }
+      },
+      "server": {
+        "type": "object"
+      },
+      "profile": {
+        "type": "object"
+      },
+      "wants": {
+        "type": [
+          "string",
+          "null"
+        ]
+      },
+      "generation": {
+        "type": "object"
+      },
+      "next_steps": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      }
+    },
+    "required": [
+      "you",
+      "mode",
+      "projects",
+      "server",
+      "profile",
+      "generation",
+      "next_steps"
+    ],
+    "additionalProperties": false
+  }
+}

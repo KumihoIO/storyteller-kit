@@ -1,0 +1,110 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "approve_canon",
+  "description": "Person decision: POST /api/projects/{project}/canon/approve",
+  "method": "POST",
+  "path": "/api/projects/{project}/canon/approve",
+  "query": [],
+  "request": {
+    "type": "object",
+    "properties": {
+      "draft_seq": {
+        "type": "integer",
+        "minimum": 0
+      },
+      "expected_revision": {
+        "type": [
+          "string",
+          "null"
+        ]
+      }
+    },
+    "required": [
+      "draft_seq",
+      "expected_revision"
+    ],
+    "additionalProperties": false
+  },
+  "response": {
+    "type": "object",
+    "properties": {
+      "ok": {
+        "const": true
+      },
+      "applied": {
+        "const": true
+      },
+      "revision_id": {
+        "type": "string"
+      },
+      "number": {
+        "type": "integer"
+      },
+      "already_approved": {
+        "type": "boolean"
+      },
+      "pending": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      },
+      "changed_domains": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      }
+    },
+    "required": [
+      "ok",
+      "applied",
+      "revision_id",
+      "number",
+      "already_approved",
+      "pending",
+      "changed_domains"
+    ],
+    "additionalProperties": false
+  },
+  "error": {
+    "$ref": "#/$defs/error_body"
+  },
+  "$defs": {
+    "error_body": {
+      "type": "object",
+      "properties": {
+        "error": {
+          "type": "object",
+          "properties": {
+            "code": {
+              "type": "string"
+            },
+            "cause": {
+              "type": "string"
+            },
+            "next_step": {
+              "type": "string"
+            },
+            "retryable": {
+              "type": "boolean"
+            },
+            "details": {
+              "type": "object"
+            }
+          },
+          "required": [
+            "code",
+            "cause"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "error"
+      ],
+      "additionalProperties": false,
+      "description": "Every refusal: 401/403 (auth), 404, 409 (changed since read; details.current), 413, 422, 429, 5xx."
+    }
+  }
+}

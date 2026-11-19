@@ -1,0 +1,129 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "queue_moments",
+  "description": "The queue_moments tool contract of 9miho-storyteller's MCP server (generated).",
+  "profiles": [
+    "granular",
+    "guided"
+  ],
+  "annotations": {
+    "readOnlyHint": false,
+    "destructiveHint": false,
+    "idempotentHint": true,
+    "openWorldHint": false
+  },
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "project_id": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 200,
+        "pattern": "^[^\\u0000-\\u001f]+$"
+      },
+      "idempotency_key": {
+        "type": "string",
+        "minLength": 8,
+        "maxLength": 128,
+        "pattern": "^[A-Za-z0-9._:-]+$",
+        "description": "A fresh UUID per new action; reuse only to retry the same call."
+      },
+      "medium": {
+        "type": "string",
+        "enum": [
+          "panel_image",
+          "shot_video",
+          "text"
+        ]
+      },
+      "episode_id": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 200,
+        "pattern": "^[^\\u0000-\\u001f]+$"
+      },
+      "scene_id": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 200,
+        "pattern": "^[^\\u0000-\\u001f]+$"
+      },
+      "moment_ids": {
+        "type": "array",
+        "maxItems": 200,
+        "items": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200,
+          "pattern": "^[^\\u0000-\\u001f]+$"
+        }
+      }
+    },
+    "required": [
+      "project_id",
+      "idempotency_key",
+      "medium"
+    ],
+    "additionalProperties": false
+  },
+  "outputSchema": {
+    "type": "object",
+    "properties": {
+      "canon_revision": {
+        "type": "string"
+      },
+      "queued": {
+        "type": "integer"
+      },
+      "orders": {
+        "type": "array",
+        "items": {
+          "type": "object"
+        }
+      },
+      "not_queued": {
+        "type": "array",
+        "description": "Moments left out, in story order; empty when every Moment was queued.",
+        "items": {
+          "type": "object",
+          "properties": {
+            "moment_id": {
+              "type": "string"
+            },
+            "medium": {
+              "type": "string",
+              "enum": [
+                "panel_image",
+                "shot_video",
+                "text"
+              ]
+            },
+            "code": {
+              "type": "string",
+              "description": "moment_in_production: the Moment already has live work."
+            }
+          },
+          "required": [
+            "moment_id",
+            "medium",
+            "code"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "next_steps": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      }
+    },
+    "required": [
+      "canon_revision",
+      "queued",
+      "orders",
+      "not_queued"
+    ],
+    "additionalProperties": false
+  }
+}

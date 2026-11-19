@@ -1,0 +1,41 @@
+# Model profiles for provider family 'nano_banana'.
+# Baseline profiles, first extracted from the 9miho provider manifests.
+# Raise `version` with any edit that can change a rendered prompt (schemas/README.md).
+provider: nano_banana
+profiles:
+  - id: nano_banana.compose
+    version: 1
+    label: "Nano Banana 1"
+    model: nano-banana-1
+    aliases: []
+    dialect: image_prose
+    identity_from_reference: false
+    timed: false
+    max_chars: null
+    inputs:
+      - {name: refs, type: image, role: reference_image, min_count: 0, max_count: 3, ordered: false}
+    mention_refs: []
+  - id: nano_banana_2.compose
+    version: 1
+    label: "Nano Banana 2"
+    model: nano-banana-2
+    aliases: []
+    dialect: image_prose
+    identity_from_reference: false
+    timed: false
+    max_chars: null
+    inputs:
+      - {name: refs, type: image, role: reference_image, min_count: 0, max_count: 17, ordered: false}
+    mention_refs: []
+  - id: nano_banana_pro.compose
+    version: 1
+    label: "Nano Banana Pro"
+    model: nano-banana-pro
+    aliases: []
+    dialect: image_prose
+    identity_from_reference: false
+    timed: false
+    max_chars: null
+    inputs:
+      - {name: refs, type: image, role: reference_image, min_count: 0, max_count: 11, ordered: false}
+    mention_refs: []

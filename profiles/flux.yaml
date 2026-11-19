@@ -1,0 +1,76 @@
+# Model profiles for provider family 'flux'.
+# Baseline profiles, first extracted from the 9miho provider manifests.
+# Raise `version` with any edit that can change a rendered prompt (schemas/README.md).
+provider: flux
+profiles:
+  - id: flux_2_flex.compose
+    version: 1
+    label: "FLUX.2 [flex]"
+    model: flux-2-flex
+    aliases: []
+    dialect: image_prose
+    identity_from_reference: false
+    timed: false
+    max_chars: null
+    inputs:
+      - {name: refs, type: image, role: reference_image, min_count: 0, max_count: 8, ordered: false}
+    mention_refs: []
+  - id: flux_2_max.compose
+    version: 1
+    label: "FLUX.2 [max]"
+    model: flux-2-max
+    aliases: []
+    dialect: image_prose
+    identity_from_reference: false
+    timed: false
+    max_chars: null
+    inputs:
+      - {name: refs, type: image, role: reference_image, min_count: 0, max_count: 8, ordered: false}
+    mention_refs: []
+  - id: flux_2_pro.compose
+    version: 1
+    label: "FLUX.2 [pro]"
+    model: flux-2-pro
+    aliases: []
+    dialect: image_prose
+    identity_from_reference: false
+    timed: false
+    max_chars: null
+    inputs:
+      - {name: refs, type: image, role: reference_image, min_count: 0, max_count: 8, ordered: false}
+    mention_refs: []
+  - id: flux_3.image_to_video
+    version: 1
+    label: "FLUX 3"
+    model: flux-3-video
+    aliases: []
+    dialect: cinematic_prose
+    identity_from_reference: false
+    timed: true
+    max_chars: null
+    inputs:
+      - {name: keyframes, type: image, role: generic, min_count: 1, max_count: 10, ordered: false}
+    mention_refs: []
+  - id: flux_3.text_to_video
+    version: 1
+    label: "FLUX 3"
+    model: flux-3-video
+    aliases: []
+    dialect: cinematic_prose
+    identity_from_reference: false
+    timed: true
+    max_chars: null
+    inputs: []
+    mention_refs: []
+  - id: flux_3.video_to_video
+    version: 1
+    label: "FLUX 3"
+    model: flux-3-video
+    aliases: []
+    dialect: cinematic_prose
+    identity_from_reference: false
+    timed: true
+    max_chars: null
+    inputs:
+      - {name: video, type: video, role: generic, min_count: 1, max_count: 1, ordered: false}
+    mention_refs: []

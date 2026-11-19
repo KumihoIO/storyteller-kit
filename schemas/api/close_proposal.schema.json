@@ -1,0 +1,77 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "close_proposal",
+  "description": "Person decision: POST /api/projects/{project}/proposals/{proposal}/close",
+  "method": "POST",
+  "path": "/api/projects/{project}/proposals/{proposal}/close",
+  "query": [],
+  "request": null,
+  "response": {
+    "type": "object",
+    "properties": {
+      "ok": {
+        "const": true
+      },
+      "applied": {
+        "const": true
+      },
+      "proposal_id": {
+        "type": "string"
+      },
+      "status": {
+        "type": "string"
+      },
+      "draft_seq": {
+        "type": "integer"
+      }
+    },
+    "required": [
+      "ok",
+      "applied",
+      "proposal_id",
+      "status",
+      "draft_seq"
+    ],
+    "additionalProperties": false
+  },
+  "error": {
+    "$ref": "#/$defs/error_body"
+  },
+  "$defs": {
+    "error_body": {
+      "type": "object",
+      "properties": {
+        "error": {
+          "type": "object",
+          "properties": {
+            "code": {
+              "type": "string"
+            },
+            "cause": {
+              "type": "string"
+            },
+            "next_step": {
+              "type": "string"
+            },
+            "retryable": {
+              "type": "boolean"
+            },
+            "details": {
+              "type": "object"
+            }
+          },
+          "required": [
+            "code",
+            "cause"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "error"
+      ],
+      "additionalProperties": false,
+      "description": "Every refusal: 401/403 (auth), 404, 409 (changed since read; details.current), 413, 422, 429, 5xx."
+    }
+  }
+}

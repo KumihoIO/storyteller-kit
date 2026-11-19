@@ -1,0 +1,29 @@
+# Model profiles for provider family 'fal'.
+# Baseline profiles, first extracted from the 9miho provider manifests.
+# Raise `version` with any edit that can change a rendered prompt (schemas/README.md).
+provider: fal
+profiles:
+  - id: fal_minimax_h3_max.image_to_video
+    version: 1
+    label: "MiniMax H3 Max · fal.ai"
+    model: minimax-h3-max
+    aliases: []
+    dialect: minimax_h3_keyed
+    identity_from_reference: false
+    timed: true
+    max_chars: 7000
+    inputs:
+      - {name: image, type: image, role: first_frame, min_count: 1, max_count: 1, ordered: false}
+      - {name: last_frame, type: image, role: last_frame, min_count: 0, max_count: 1, ordered: false}
+    mention_refs: []
+  - id: fal_minimax_h3_max.text_to_video
+    version: 1
+    label: "MiniMax H3 Max · fal.ai"
+    model: minimax-h3-max
+    aliases: []
+    dialect: minimax_h3_keyed
+    identity_from_reference: false
+    timed: true
+    max_chars: 7000
+    inputs: []
+    mention_refs: []

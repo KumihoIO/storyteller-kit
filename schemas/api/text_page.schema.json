@@ -1,0 +1,326 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "text_page",
+  "description": "Text takes (without bodies)",
+  "method": "GET",
+  "path": "/api/projects/{project}/texts",
+  "query": [
+    "cursor",
+    "limit"
+  ],
+  "request": null,
+  "response": {
+    "type": "object",
+    "properties": {
+      "items": {
+        "type": "array",
+        "items": {
+          "$ref": "#/$defs/text_output"
+        }
+      },
+      "total": {
+        "type": [
+          "integer",
+          "null"
+        ]
+      },
+      "more_available": {
+        "type": "boolean"
+      },
+      "next_cursor": {
+        "type": [
+          "string",
+          "null"
+        ]
+      }
+    },
+    "required": [
+      "items",
+      "total",
+      "more_available",
+      "next_cursor"
+    ],
+    "additionalProperties": false,
+    "description": "One page. Pass next_cursor back as `cursor` for the next; null when there is no more."
+  },
+  "error": {
+    "$ref": "#/$defs/error_body"
+  },
+  "$defs": {
+    "adoption": {
+      "description": "Whether a take is the Moment's current cut and who decided it.",
+      "type": "string",
+      "enum": [
+        "provisional",
+        "pending_review",
+        "confirmed",
+        "rejected",
+        "candidate"
+      ]
+    },
+    "error_body": {
+      "type": "object",
+      "properties": {
+        "error": {
+          "type": "object",
+          "properties": {
+            "code": {
+              "type": "string"
+            },
+            "cause": {
+              "type": "string"
+            },
+            "next_step": {
+              "type": "string"
+            },
+            "retryable": {
+              "type": "boolean"
+            },
+            "details": {
+              "type": "object"
+            }
+          },
+          "required": [
+            "code",
+            "cause"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "error"
+      ],
+      "additionalProperties": false,
+      "description": "Every refusal: 401/403 (auth), 404, 409 (changed since read; details.current), 413, 422, 429, 5xx."
+    },
+    "text_block": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "heading",
+            "paragraph",
+            "dialogue",
+            "direction",
+            "transition",
+            "shot"
+          ]
+        },
+        "text": {
+          "type": "string"
+        },
+        "moment_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "speaker_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "parenthetical": {
+          "type": "string"
+        },
+        "shot": {
+          "$ref": "#/$defs/text_shot"
+        }
+      },
+      "required": [
+        "kind",
+        "text",
+        "moment_id"
+      ],
+      "additionalProperties": false
+    },
+    "text_finding": {
+      "type": "object",
+      "properties": {
+        "finding_id": {
+          "type": "string"
+        },
+        "kind": {
+          "type": "string",
+          "enum": [
+            "dialogue_not_in_ledger",
+            "setting_not_in_canon"
+          ]
+        },
+        "block_index": {
+          "type": "integer"
+        },
+        "moment_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "excerpt": {
+          "type": "string"
+        },
+        "ledger_line_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "canon_node": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "canon_text": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "required": [
+        "finding_id",
+        "kind",
+        "block_index",
+        "moment_id",
+        "excerpt",
+        "ledger_line_id",
+        "canon_node",
+        "canon_text"
+      ],
+      "additionalProperties": false
+    },
+    "text_output": {
+      "type": "object",
+      "properties": {
+        "text_id": {
+          "type": "string"
+        },
+        "project_id": {
+          "type": "string"
+        },
+        "episode_id": {
+          "type": "string"
+        },
+        "scope_moment_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "kind": {
+          "type": "string",
+          "enum": [
+            "web_novel",
+            "screenplay",
+            "text_storyboard"
+          ]
+        },
+        "title": {
+          "type": "string"
+        },
+        "order_id": {
+          "type": "string"
+        },
+        "take_id": {
+          "type": "string"
+        },
+        "canon_revision": {
+          "type": "string"
+        },
+        "adoption": {
+          "$ref": "#/$defs/adoption"
+        },
+        "stale": {
+          "type": "boolean"
+        },
+        "author": {
+          "type": "string"
+        },
+        "updated_at": {
+          "type": "integer"
+        },
+        "char_count": {
+          "type": "integer"
+        },
+        "blocks": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/text_block"
+          }
+        },
+        "body_available": {
+          "type": "boolean"
+        },
+        "host": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "model_used": {
+          "type": "string"
+        },
+        "findings": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/text_finding"
+          }
+        }
+      },
+      "required": [
+        "text_id",
+        "project_id",
+        "episode_id",
+        "scope_moment_id",
+        "kind",
+        "title",
+        "order_id",
+        "take_id",
+        "canon_revision",
+        "adoption",
+        "stale",
+        "author",
+        "updated_at",
+        "char_count",
+        "blocks",
+        "body_available",
+        "host",
+        "model_used",
+        "findings"
+      ],
+      "additionalProperties": false,
+      "description": "A text take. Lists carry blocks: [] (read one text for its body)."
+    },
+    "text_shot": {
+      "type": "object",
+      "properties": {
+        "number": {
+          "type": "integer"
+        },
+        "framing": {
+          "type": "string"
+        },
+        "camera": {
+          "type": "string"
+        },
+        "sound": {
+          "type": "string"
+        },
+        "duration_seconds": {
+          "type": "number"
+        }
+      },
+      "required": [
+        "number",
+        "framing",
+        "camera",
+        "sound",
+        "duration_seconds"
+      ],
+      "additionalProperties": false
+    }
+  }
+}

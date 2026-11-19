@@ -1,0 +1,106 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "me",
+  "description": "Who the token names, the server's mode and capabilities",
+  "method": "GET",
+  "path": "/api/me",
+  "query": [],
+  "request": null,
+  "response": {
+    "type": "object",
+    "properties": {
+      "member_id": {
+        "type": "string"
+      },
+      "tenant_id": {
+        "type": "string"
+      },
+      "mode": {
+        "type": "string",
+        "enum": [
+          "local",
+          "hosted"
+        ]
+      },
+      "local_session": {
+        "type": "boolean"
+      },
+      "capabilities": {
+        "$ref": "#/$defs/capabilities"
+      }
+    },
+    "required": [
+      "member_id",
+      "tenant_id",
+      "mode",
+      "local_session",
+      "capabilities"
+    ],
+    "additionalProperties": false
+  },
+  "error": {
+    "$ref": "#/$defs/error_body"
+  },
+  "$defs": {
+    "capabilities": {
+      "type": "object",
+      "properties": {
+        "text_collections": {
+          "type": "boolean"
+        },
+        "references": {
+          "type": "boolean"
+        },
+        "draft_editing": {
+          "type": "boolean"
+        },
+        "live_updates": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "text_collections",
+        "references",
+        "draft_editing",
+        "live_updates"
+      ],
+      "additionalProperties": false,
+      "description": "What this server has data for. False: the app shows that it is not available."
+    },
+    "error_body": {
+      "type": "object",
+      "properties": {
+        "error": {
+          "type": "object",
+          "properties": {
+            "code": {
+              "type": "string"
+            },
+            "cause": {
+              "type": "string"
+            },
+            "next_step": {
+              "type": "string"
+            },
+            "retryable": {
+              "type": "boolean"
+            },
+            "details": {
+              "type": "object"
+            }
+          },
+          "required": [
+            "code",
+            "cause"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "error"
+      ],
+      "additionalProperties": false,
+      "description": "Every refusal: 401/403 (auth), 404, 409 (changed since read; details.current), 413, 422, 429, 5xx."
+    }
+  }
+}

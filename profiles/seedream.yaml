@@ -1,0 +1,29 @@
+# Model profiles for provider family 'seedream'.
+# Baseline profiles, first extracted from the 9miho provider manifests.
+# Raise `version` with any edit that can change a rendered prompt (schemas/README.md).
+provider: seedream
+profiles:
+  - id: seedream_5_lite.compose
+    version: 1
+    label: "Seedream 5.0 Lite"
+    model: seedream-5.0-lite
+    aliases: []
+    dialect: image_prose
+    identity_from_reference: false
+    timed: false
+    max_chars: null
+    inputs:
+      - {name: refs, type: image, role: reference_image, min_count: 0, max_count: 14, ordered: false}
+    mention_refs: []
+  - id: seedream_5_pro.compose
+    version: 1
+    label: "Seedream 5.0 Pro"
+    model: seedream-5.0-pro
+    aliases: []
+    dialect: image_prose
+    identity_from_reference: false
+    timed: false
+    max_chars: null
+    inputs:
+      - {name: refs, type: image, role: reference_image, min_count: 0, max_count: 10, ordered: false}
+    mention_refs: []

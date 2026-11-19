@@ -1,0 +1,87 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "media_url",
+  "description": "A short-lived URL for kept media (a take's media:sha256 result)",
+  "method": "GET",
+  "path": "/api/projects/{project}/media/{digest}",
+  "query": [],
+  "request": null,
+  "response": {
+    "type": "object",
+    "properties": {
+      "sha256": {
+        "type": "string"
+      },
+      "url": {
+        "type": "string"
+      },
+      "expires_at": {
+        "type": "integer"
+      },
+      "content_type": {
+        "type": "string"
+      },
+      "size_bytes": {
+        "type": "integer"
+      },
+      "kind": {
+        "type": "string",
+        "enum": [
+          "image",
+          "video",
+          "audio"
+        ]
+      }
+    },
+    "required": [
+      "sha256",
+      "url",
+      "expires_at",
+      "content_type",
+      "size_bytes",
+      "kind"
+    ],
+    "additionalProperties": false,
+    "description": "A short-lived URL for one kept object; the reader may load it until expires_at."
+  },
+  "error": {
+    "$ref": "#/$defs/error_body"
+  },
+  "$defs": {
+    "error_body": {
+      "type": "object",
+      "properties": {
+        "error": {
+          "type": "object",
+          "properties": {
+            "code": {
+              "type": "string"
+            },
+            "cause": {
+              "type": "string"
+            },
+            "next_step": {
+              "type": "string"
+            },
+            "retryable": {
+              "type": "boolean"
+            },
+            "details": {
+              "type": "object"
+            }
+          },
+          "required": [
+            "code",
+            "cause"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "error"
+      ],
+      "additionalProperties": false,
+      "description": "Every refusal: 401/403 (auth), 404, 409 (changed since read; details.current), 413, 422, 429, 5xx."
+    }
+  }
+}

@@ -1,0 +1,373 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.9miho.io/storyteller/direct/v2/direction.schema.json",
+  "title": "Direction",
+  "description": "One provider-neutral creative document: who is in frame, what they want, where they stand, how the camera watches them, what the light does. It is not a prompt. It names entities (cast ids); a renderer turns them into the target model's own addressing and dialect. A field exists only when some renderer treats it differently from another. Platform parameters (duration, resolution, aspect, tier, seed) and prompt syntax (@Image1, section headers, timecodes) are deliberately absent. The document carries direction_version; version 1 stays readable, version 2 additionally requires every scripted line to name a cast owner.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["direction_version"],
+  "properties": {
+    "direction_version": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "Schema version of this document; 2 today. Required on the wire: it is how a Direction is told apart from other JSON. Bumped only when a field's meaning changes in a way a stored Direction cannot survive; additive fields do not bump it. A reader keeps accepting older versions."
+    },
+    "intent": { "$ref": "#/$defs/intent" },
+    "cast": {
+      "type": "array",
+      "default": [],
+      "items": { "$ref": "#/$defs/cast_member" },
+      "description": "Every addressable entity: people, places, props, vehicles, styles. Ids are unique within the list; the reference reader refuses a repeat, which this schema cannot say."
+    },
+    "scene": { "type": "string", "default": "", "description": "Free-text scene description." },
+    "staging": { "$ref": "#/$defs/staging" },
+    "performance": {
+      "type": "array",
+      "default": [],
+      "items": { "$ref": "#/$defs/performance" },
+      "description": "Behaviour per character. A performance for someone not in cast is an authoring error a renderer surfaces."
+    },
+    "shots": {
+      "type": "array",
+      "default": [],
+      "items": { "$ref": "#/$defs/shot" },
+      "description": "One shot is a single take; more than one is a controlled multi-shot sequence with explicit cuts."
+    },
+    "optics": { "oneOf": [{ "$ref": "#/$defs/optics" }, { "type": "null" }], "default": null },
+    "camera": { "$ref": "#/$defs/camera" },
+    "lighting": { "$ref": "#/$defs/lighting" },
+    "physics": { "type": "array", "default": [], "items": { "type": "string" } },
+    "audio": { "$ref": "#/$defs/audio" },
+    "style": { "$ref": "#/$defs/style" },
+    "edit": { "oneOf": [{ "$ref": "#/$defs/edit_intent" }, { "type": "null" }], "default": null },
+    "guards": { "type": "array", "default": [], "items": { "$ref": "#/$defs/guard" } },
+    "continuity": {
+      "type": "array",
+      "default": [],
+      "items": { "type": "string" },
+      "description": "What must not change across an internal cut. Only meaningful with more than one shot."
+    },
+    "storyboard": {
+      "type": ["object", "null"],
+      "default": null,
+      "description": "Optional server-defined block. Its fields are documented by the hosted service."
+    }
+  },
+  "if": { "properties": { "direction_version": { "minimum": 2 } } },
+  "then": {
+    "properties": {
+      "audio": {
+        "properties": {
+          "dialogue": {
+            "items": { "required": ["who"], "properties": { "who": { "minLength": 1 } } }
+          }
+        }
+      }
+    }
+  },
+  "$comment": "This schema describes the canonical form of a Direction. The reference reader tolerates the spellings AI hosts write: before it validates, it folds case, spaces and hyphens in enum values and maps a few synonyms onto them (Mid-ground, MIDDLE GROUND or mid become midground). That normalisation is a documented pre-validation step, not part of the contract: a writer emits the canonical spelling, and a port that wants the same tolerance applies the same step first. The reference implementation exposes it as canonical_direction, which returns the normalised document; the document it returns validates against this schema. Scalars are strict: the string '4.5' is not a number, 1 is not a boolean and true is not a number. Not expressible in JSON Schema, and enforced by the reference reader: from version 2 every audio.dialogue[].who must equal the id of a cast member (the schema only requires a non-empty who); cast ids are unique (the schema cannot require uniqueness by one key); and a beat may not both activate and suppress the same facial action at the same timing and laterality (see beat).",
+  "$defs": {
+    "intent": {
+      "title": "Intent",
+      "description": "What the author asked for, kept verbatim. A renderer never discards or paraphrases line; it is the last thing cut for length.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "line": { "type": "string", "default": "" },
+        "medium": { "type": "string", "enum": ["video", "image"], "default": "video" }
+      }
+    },
+    "cast_member": {
+      "title": "Cast member",
+      "description": "One addressable entity. Places are cast members too: a location reference steers a shot the way a character sheet steers a face.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1, "description": "Stable id other parts of the Direction point at." },
+        "kind": {
+          "type": "string",
+          "enum": ["character", "location", "prop", "vehicle", "creature", "style"],
+          "default": "character"
+        },
+        "name": { "type": "string", "default": "", "description": "Display name for prose. Falls back to id." },
+        "binding": {
+          "type": "string",
+          "default": "",
+          "description": "Which wired reference this entity is, addressed generically as '<kind>#<index>' where kind is image, video or audio and index is 0-based in wire order (image#0, video#1). Empty means described but not referenced. The reference reader does not check the form; a renderer reads it."
+        },
+        "reference_role": {
+          "oneOf": [{ "const": "camera_motion" }, { "type": "null" }],
+          "default": null,
+          "description": "Semantic job of the bound reference: camera_motion marks a grey-box camera previz that must not be read as appearance."
+        },
+        "anchors": { "type": "string", "default": "", "description": "The minimum critical anchors for the shot: age, role, state, unique visible identifiers." },
+        "locked": {
+          "type": "boolean",
+          "default": false,
+          "description": "True when the anchors sentence was confirmed against a generated reference sheet and must be reproduced verbatim."
+        }
+      }
+    },
+    "blocking_entry": {
+      "title": "Blocking entry",
+      "description": "Where one cast member is and where they are pointed. Body direction and gaze are separate facts.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["who"],
+      "properties": {
+        "who": { "type": "string", "minLength": 1, "description": "A cast id." },
+        "screen_position": { "type": "string", "default": "" },
+        "depth": { "type": "string", "enum": ["", "foreground", "midground", "background"], "default": "" },
+        "anchor": { "type": "string", "default": "", "description": "A measured landmark (within 1 meter of the burned car), not a vague one." },
+        "body_facing": { "type": "string", "default": "" },
+        "gaze_target": { "type": "string", "default": "", "description": "What they look at and where it is, including the camera relationship." },
+        "movement": { "type": "string", "default": "", "description": "Where the body goes, including when it goes nowhere." }
+      }
+    },
+    "staging": {
+      "title": "Staging",
+      "description": "The frame's geography and what is in it when it opens.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "spatial_compass": { "type": "string", "default": "", "description": "A sealed coordinate system for coverage: named landmarks, their screen relationship, the camera side of the 180-degree line." },
+        "first_frame": { "type": "array", "default": [], "items": { "type": "string" }, "description": "Cast ids that must be visible in frame one." },
+        "allow_empty_open": { "type": "boolean", "default": false },
+        "blocking": { "type": "array", "default": [], "items": { "$ref": "#/$defs/blocking_entry" } },
+        "proxemics": { "type": "string", "default": "", "description": "Distance between people, and where it changes." }
+      }
+    },
+    "facial_action": {
+      "title": "Facial action",
+      "description": "One anatomically observable facial action (a FACS Action Unit), not an emotion label. Stored as provenance and lowered to observable English before any dialect renders it.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["au"],
+      "properties": {
+        "au": { "type": "string", "enum": ["AU1", "AU4", "AU6", "AU7", "AU12", "AU15", "AU17", "AU23", "AU24"] },
+        "mode": { "type": "string", "enum": ["activate", "suppress"], "default": "activate" },
+        "intensity": { "type": "string", "enum": ["none", "trace", "slight", "moderate", "strong"], "default": "slight" },
+        "laterality": { "type": "string", "enum": ["bilateral", "left", "right"], "default": "bilateral" },
+        "timing": { "type": "string", "enum": ["baseline", "onset", "apex", "offset"], "default": "apex" },
+        "hold": { "type": "string", "enum": ["none", "beat", "shot"], "default": "none" }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "mode": { "const": "suppress" } }, "required": ["mode"] },
+          "then": { "properties": { "intensity": { "const": "none" } }, "required": ["intensity"] },
+          "else": { "properties": { "intensity": { "not": { "const": "none" } } } }
+        },
+        {
+          "if": { "properties": { "au": { "const": "AU17" } }, "required": ["au"] },
+          "then": { "properties": { "laterality": { "const": "bilateral" } } }
+        },
+        {
+          "if": { "properties": { "timing": { "const": "baseline" } }, "required": ["timing"] },
+          "then": { "required": ["hold"], "properties": { "hold": { "not": { "const": "none" } } } }
+        },
+        {
+          "if": { "properties": { "timing": { "const": "offset" } }, "required": ["timing"] },
+          "then": { "properties": { "hold": { "const": "none" } } }
+        }
+      ],
+      "$comment": "The allOf rules restate the reference reader's coherence checks: an activated action needs a visible intensity, a suppressed one must use none, AU17 is a central chin action and stays bilateral, a baseline action must hold through a beat or shot, an offset action cannot be held. A suppress action must name intensity none explicitly, because its default (slight) is not none."
+    },
+    "beat": {
+      "title": "Beat",
+      "description": "The smallest unit of action: one want, pursued one way. A beat ends when the objective lands, the tactic fails, new information arrives or the power balance shifts, and the change must be visible.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "shot_id": { "type": "string", "default": "", "description": "Optional id of the Shot this beat belongs to. Empty keeps chronological distribution." },
+        "tactic": { "type": "string", "default": "" },
+        "action": { "type": "string", "default": "" },
+        "visible_change": { "type": "string", "default": "" },
+        "facial_actions": { "type": "array", "default": [], "items": { "$ref": "#/$defs/facial_action" } }
+      },
+      "if": {
+        "properties": {
+          "facial_actions": { "contains": { "type": "object", "required": ["hold"], "properties": { "hold": { "const": "shot" } } } }
+        },
+        "required": ["facial_actions"]
+      },
+      "then": { "required": ["shot_id"], "properties": { "shot_id": { "pattern": "\\S" } } },
+      "$comment": "Not expressible: within one beat two facial actions with the same au, laterality and timing must not disagree on mode (activate against suppress). The reference reader refuses it. A shot-held facial action requires a shot_id with a non-blank character, as checked here."
+    },
+    "performance": {
+      "title": "Performance",
+      "description": "One character's behaviour under pressure. Emotion is deliberately not a field: a character wants something, something is in the way, and they act.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["who"],
+      "properties": {
+        "who": { "type": "string", "minLength": 1, "description": "A cast id." },
+        "objective": { "type": "string", "default": "", "description": "A verb aimed at a partner, never a state." },
+        "obstacle": { "type": "string", "default": "" },
+        "stakes": { "type": "string", "default": "" },
+        "beats": { "type": "array", "default": [], "items": { "$ref": "#/$defs/beat" } },
+        "subtext": { "type": "string", "default": "" },
+        "body": { "type": "string", "default": "", "description": "Centre of gravity, tempo, openness, breath as one prose line." },
+        "business": { "type": "string", "default": "", "description": "The physical task the character does while talking." },
+        "status": { "type": "string", "default": "" },
+        "eye_life": { "type": "string", "default": "" },
+        "voice": { "type": "string", "default": "", "description": "A locked vocal identity, reproduced verbatim where the dialect has a place for it." }
+      }
+    },
+    "optics": {
+      "title": "Optics",
+      "description": "Lens character expressed as an observable outcome, not as metadata.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "fov_deg": {
+          "type": ["integer", "null"],
+          "default": null,
+          "description": "Field of view in whole degrees. The canonical ladder is 8, 18, 29, 47, 84, 107; the reference reader accepts any integer."
+        },
+        "camera_distance": { "type": "string", "default": "" },
+        "character": { "type": "string", "default": "" },
+        "content_class": { "type": "string", "enum": ["", "portrait", "environmental", "detail", "observation"], "default": "" },
+        "outcome": { "type": "array", "default": [], "items": { "type": "string" }, "description": "Observable phrases that hold the lens against drift." }
+      }
+    },
+    "camera": {
+      "title": "Camera",
+      "description": "Where the operator stands and how the camera moves.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "height": { "type": "string", "default": "" },
+        "angle": { "type": "string", "default": "" },
+        "side": { "type": "string", "default": "" },
+        "framing": { "type": "string", "default": "" },
+        "movement": { "type": "string", "default": "" },
+        "motivation": { "type": "string", "default": "" },
+        "handheld": { "type": "string", "default": "" },
+        "focus": { "type": "string", "default": "" }
+      }
+    },
+    "lighting": {
+      "title": "Lighting",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "key_source": { "type": "string", "default": "" },
+        "direction": { "type": "string", "default": "" },
+        "camera_side": { "type": "string", "default": "" },
+        "subject_side": { "type": "string", "default": "" },
+        "background": { "type": "string", "default": "" },
+        "exposure_priority": { "type": "string", "default": "" },
+        "avoid": { "type": "array", "default": [], "items": { "type": "string" } }
+      }
+    },
+    "shot": {
+      "title": "Shot",
+      "description": "One continuous camera position. Every cut is explicit because an unspecified cut is an invented one.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": { "type": "string", "default": "", "description": "Referenced by beat.shot_id." },
+        "seconds": { "type": ["number", "null"], "minimum": 0, "default": null },
+        "cut_in": {
+          "type": "string",
+          "enum": ["", "HARD CUT", "SMASH CUT", "MATCH CUT", "INSERT CUT", "REVERSE CUT", "WHIP CUT"],
+          "default": ""
+        },
+        "first_frame": { "type": "array", "default": [], "items": { "type": "string" } },
+        "action": { "type": "string", "default": "" },
+        "camera": {
+          "oneOf": [{ "$ref": "#/$defs/camera" }, { "type": "null" }],
+          "default": null,
+          "description": "Shot-local operator state; null means the Direction's camera applies."
+        },
+        "optics": {
+          "oneOf": [{ "$ref": "#/$defs/optics" }, { "type": "null" }],
+          "default": null,
+          "description": "Per-shot lens override; null means the Direction's optics."
+        }
+      }
+    },
+    "dialogue_line": {
+      "title": "Dialogue line",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "who": { "type": "string", "default": "", "description": "A cast id. From direction_version 2 it must be non-empty and name a cast member." },
+        "line": { "type": "string", "default": "" },
+        "starts_at": { "type": ["number", "null"], "default": null, "description": "Seconds from the start." },
+        "silence_before": { "type": ["number", "null"], "default": null },
+        "silence_after": { "type": ["number", "null"], "default": null }
+      }
+    },
+    "audio": {
+      "title": "Audio",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "dialogue": { "type": "array", "default": [], "items": { "$ref": "#/$defs/dialogue_line" } },
+        "heard": { "type": "array", "default": [], "items": { "type": "string" } },
+        "ambient": { "type": "string", "default": "" },
+        "music_policy": { "type": "string", "enum": ["unspecified", "none", "authored"], "default": "unspecified" },
+        "music": { "type": "string", "default": "" },
+        "sfx": { "type": "string", "default": "" },
+        "subtitles": { "type": "boolean", "default": false }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "music_policy": { "const": "none" } }, "required": ["music_policy"] },
+          "then": { "properties": { "music": { "pattern": "^\\s*$" } } }
+        },
+        {
+          "if": { "properties": { "music_policy": { "const": "authored" } }, "required": ["music_policy"] },
+          "then": { "required": ["music"], "properties": { "music": { "pattern": "\\S" } } }
+        }
+      ],
+      "$comment": "music must be blank when music_policy is none, and must contain a non-blank character when it is authored. Blank means whitespace only, as in the reference reader's strip()."
+    },
+    "palette": {
+      "title": "Palette",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "dominant": { "type": "string", "default": "" },
+        "secondary": { "type": "string", "default": "" },
+        "accent": { "type": "string", "default": "" }
+      }
+    },
+    "style": {
+      "title": "Style",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "capture": { "type": "string", "default": "" },
+        "film_stock": { "type": "string", "default": "" },
+        "palette": { "oneOf": [{ "$ref": "#/$defs/palette" }, { "type": "null" }], "default": null },
+        "anchors": { "type": "array", "default": [], "items": { "type": "string" } }
+      }
+    },
+    "edit_intent": {
+      "title": "Edit intent",
+      "description": "Present when the Direction edits an existing image or clip rather than generating one.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "goal": { "type": "string", "default": "" },
+        "change": { "type": "string", "default": "" },
+        "preserve": { "type": "array", "default": [], "items": { "type": "string" } },
+        "fill": { "type": "string", "default": "" }
+      }
+    },
+    "guard": {
+      "title": "Guard",
+      "description": "Something that must not happen, with the positive thing to do instead.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["what"],
+      "properties": {
+        "what": { "type": "string", "minLength": 1 },
+        "positive": { "type": "string", "default": "" }
+      }
+    }
+  }
+}

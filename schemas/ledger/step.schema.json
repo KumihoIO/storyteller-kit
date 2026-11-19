@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.9miho.io/storyteller/ledger/v2/step.schema.json",
+  "title": "Step",
+  "description": "What story_step returns: the next action the host should take for a member. The server picks the action each call; the host repeats the call.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["action"],
+  "properties": {
+    "action": { "$ref": "defs.schema.json#/$defs/host_action" },
+    "order_id": { "type": ["string", "null"], "default": null, "description": "The order the action is about. Null for done with nothing to wait for." },
+    "claim": { "type": "boolean", "default": false, "description": "The order is unclaimed: the server claims it for the member before the host acts." },
+    "render": { "type": "boolean", "default": false, "description": "The direction is stored but not rendered yet: the server renders first." },
+    "reason": {
+      "oneOf": [{ "$ref": "defs.schema.json#/$defs/step_reason" }, { "type": "null" }],
+      "default": null
+    },
+    "open_order_ids": {
+      "type": "array",
+      "items": { "type": "string" },
+      "default": [],
+      "description": "Every order the member holds in a working state, in production order. A batch host reads this to know what it has running."
+    }
+  },
+  "$comment": "The server emits every field. A reader may treat a missing field as its default. A step is parsed as strictly as every other ledger record: an unknown key is refused and no scalar is coerced (the string 'true' or the integer 1 is not a boolean). The action repin is addressed to the server, never to the host."
+}

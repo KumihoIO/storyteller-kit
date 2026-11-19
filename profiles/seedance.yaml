@@ -1,0 +1,127 @@
+# Model profiles for provider family 'seedance'.
+# Baseline profiles, first extracted from the 9miho provider manifests.
+# Raise `version` with any edit that can change a rendered prompt (schemas/README.md).
+provider: seedance
+profiles:
+  - id: seedance.first_last_to_video
+    version: 1
+    label: "Seedance 2.0"
+    model: seedance-2.0
+    aliases: [seedance-2.0-fast, seedance-2.0-mini]
+    dialect: seedance_sectioned
+    identity_from_reference: false
+    timed: true
+    max_chars: null
+    inputs:
+      - {name: image, type: image, role: first_frame, min_count: 1, max_count: 1, ordered: true}
+      - {name: last_frame, type: image, role: last_frame, min_count: 1, max_count: 1, ordered: true}
+    mention_refs:
+      - {label: Image, ports: [image, last_frame]}
+  - id: seedance.image_to_video
+    version: 1
+    label: "Seedance 2.0"
+    model: seedance-2.0
+    aliases: [seedance-2.0-fast, seedance-2.0-mini]
+    dialect: seedance_sectioned
+    identity_from_reference: false
+    timed: true
+    max_chars: null
+    inputs:
+      - {name: image, type: image, role: first_frame, min_count: 1, max_count: 1, ordered: true}
+    mention_refs:
+      - {label: Image, ports: [image]}
+  - id: seedance.reference_to_video
+    version: 1
+    label: "Seedance 2.0"
+    model: seedance-2.0
+    aliases: [seedance-2.0-fast, seedance-2.0-mini]
+    dialect: seedance_sectioned
+    identity_from_reference: true
+    timed: true
+    max_chars: null
+    inputs:
+      - {name: refs, type: image, role: reference_image, min_count: 1, max_count: 9, ordered: true}
+      - {name: video_refs, type: video, role: reference_video, min_count: 0, max_count: 3, ordered: true, guidance: [camera_motion]}
+      - {name: audio_refs, type: audio, role: reference_audio, min_count: 0, max_count: 3, ordered: true}
+    mention_refs:
+      - {label: Image, ports: [refs]}
+      - {label: Video, ports: [video_refs]}
+      - {label: Audio, ports: [audio_refs]}
+  - id: seedance_2_5.first_last_to_video
+    version: 1
+    label: "Seedance 2.5"
+    model: seedance-2.5
+    aliases: []
+    dialect: seedance_sectioned
+    identity_from_reference: false
+    timed: true
+    max_chars: null
+    inputs:
+      - {name: image, type: image, role: first_frame, min_count: 1, max_count: 1, ordered: true}
+      - {name: last_frame, type: image, role: last_frame, min_count: 1, max_count: 1, ordered: true}
+    mention_refs:
+      - {label: Image, ports: [image, last_frame]}
+  - id: seedance_2_5.image_to_video
+    version: 1
+    label: "Seedance 2.5"
+    model: seedance-2.5
+    aliases: []
+    dialect: seedance_sectioned
+    identity_from_reference: false
+    timed: true
+    max_chars: null
+    inputs:
+      - {name: image, type: image, role: first_frame, min_count: 1, max_count: 1, ordered: true}
+    mention_refs:
+      - {label: Image, ports: [image]}
+  - id: seedance_2_5.reference_to_video
+    version: 1
+    label: "Seedance 2.5"
+    model: seedance-2.5
+    aliases: []
+    dialect: seedance_sectioned
+    identity_from_reference: true
+    timed: true
+    max_chars: null
+    inputs:
+      - {name: refs, type: image, role: reference_image, min_count: 0, max_count: 30, ordered: true}
+      - {name: video_refs, type: video, role: reference_video, min_count: 0, max_count: 10, ordered: true, guidance: [camera_motion]}
+      - {name: audio_refs, type: audio, role: reference_audio, min_count: 0, max_count: 10, ordered: true}
+    mention_refs:
+      - {label: Image, ports: [refs]}
+      - {label: Video, ports: [video_refs]}
+      - {label: Audio, ports: [audio_refs]}
+  - id: seedance_2_5.video_edit
+    version: 1
+    label: "Seedance 2.5"
+    model: seedance-2.5
+    aliases: []
+    dialect: seedance_sectioned
+    identity_from_reference: true
+    timed: false
+    max_chars: null
+    inputs:
+      - {name: video_refs, type: video, role: reference_video, min_count: 1, max_count: 10, ordered: true}
+      - {name: refs, type: image, role: reference_image, min_count: 0, max_count: 30, ordered: true}
+      - {name: audio_refs, type: audio, role: reference_audio, min_count: 0, max_count: 10, ordered: true}
+    mention_refs:
+      - {label: Image, ports: [refs]}
+      - {label: Video, ports: [video_refs]}
+      - {label: Audio, ports: [audio_refs]}
+  - id: seedance_2_5.video_extend
+    version: 1
+    label: "Seedance 2.5"
+    model: seedance-2.5
+    aliases: []
+    dialect: seedance_sectioned
+    identity_from_reference: true
+    timed: true
+    max_chars: null
+    inputs:
+      - {name: video_refs, type: video, role: reference_video, min_count: 1, max_count: 10, ordered: true}
+      - {name: refs, type: image, role: reference_image, min_count: 0, max_count: 30, ordered: true}
+      - {name: audio_refs, type: audio, role: reference_audio, min_count: 0, max_count: 10, ordered: true}
+    mention_refs:
+      - {label: Image, ports: [refs]}
+      - {label: Video, ports: [video_refs]}
+      - {label: Audio, ports: [audio_refs]}

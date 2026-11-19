@@ -1,0 +1,121 @@
+# Model profiles for provider family 'minimax_h3'.
+# Baseline profiles, first extracted from the 9miho provider manifests.
+# Raise `version` with any edit that can change a rendered prompt (schemas/README.md).
+provider: minimax_h3
+profiles:
+  - id: minimax_h3.first_last_to_video
+    version: 1
+    label: "MiniMax H3 · ComfyUI"
+    model: minimax-h3
+    aliases: []
+    dialect: minimax_h3_keyed
+    identity_from_reference: false
+    timed: true
+    max_chars: 7000
+    inputs:
+      - {name: image, type: image, role: first_frame, min_count: 0, max_count: 1, ordered: false}
+      - {name: last_frame, type: image, role: last_frame, min_count: 0, max_count: 1, ordered: false}
+    mention_refs: []
+  - id: minimax_h3.reference_to_video
+    version: 1
+    label: "MiniMax H3 · ComfyUI"
+    model: minimax-h3
+    aliases: []
+    dialect: minimax_h3_keyed
+    identity_from_reference: true
+    timed: true
+    max_chars: 7000
+    inputs:
+      - {name: refs, type: image, role: reference_image, min_count: 0, max_count: 9, ordered: true}
+      - {name: video_refs, type: video, role: reference_video, min_count: 0, max_count: 3, ordered: true, guidance: [camera_motion]}
+      - {name: audio_refs, type: audio, role: reference_audio, min_count: 0, max_count: 3, ordered: true}
+    mention_refs:
+      - {label: Picture, ports: [refs]}
+      - {label: Video, ports: [video_refs]}
+      - {label: Audio, ports: [audio_refs]}
+  - id: minimax_h3.text_to_video
+    version: 1
+    label: "MiniMax H3 · ComfyUI"
+    model: minimax-h3
+    aliases: []
+    dialect: minimax_h3_keyed
+    identity_from_reference: false
+    timed: true
+    max_chars: 7000
+    inputs: []
+    mention_refs: []
+  - id: minimax_h3_sage_sol.reference_to_video
+    version: 1
+    label: "MiniMax H3 Sage + Sol · 15+5 Latent Upscale · ComfyUI"
+    model: minimax-h3-sage-sol-upscale
+    aliases: []
+    dialect: minimax_h3_sage_sol_keyed
+    identity_from_reference: true
+    timed: true
+    max_chars: 7000
+    inputs:
+      - {name: refs, type: image, role: reference_image, min_count: 0, max_count: 9, ordered: true}
+      - {name: video_refs, type: video, role: reference_video, min_count: 0, max_count: 3, ordered: true, guidance: [camera_motion]}
+      - {name: audio_refs, type: audio, role: reference_audio, min_count: 0, max_count: 3, ordered: true}
+    mention_refs:
+      - {label: Picture, ports: [refs]}
+      - {label: Video, ports: [video_refs]}
+      - {label: Audio, ports: [audio_refs]}
+  - id: minimax_h3_turbo.first_last_to_video
+    version: 1
+    label: "MiniMax H3 Turbo · ComfyUI"
+    model: minimax-h3-turbo
+    aliases: []
+    dialect: minimax_h3_keyed
+    identity_from_reference: false
+    timed: true
+    max_chars: 7000
+    inputs:
+      - {name: image, type: image, role: first_frame, min_count: 0, max_count: 1, ordered: false}
+      - {name: last_frame, type: image, role: last_frame, min_count: 0, max_count: 1, ordered: false}
+    mention_refs: []
+  - id: minimax_h3_turbo.reference_to_video
+    version: 1
+    label: "MiniMax H3 Turbo · ComfyUI"
+    model: minimax-h3-turbo
+    aliases: []
+    dialect: minimax_h3_keyed
+    identity_from_reference: true
+    timed: true
+    max_chars: 7000
+    inputs:
+      - {name: refs, type: image, role: reference_image, min_count: 0, max_count: 9, ordered: true}
+      - {name: video_refs, type: video, role: reference_video, min_count: 0, max_count: 3, ordered: true, guidance: [camera_motion]}
+      - {name: audio_refs, type: audio, role: reference_audio, min_count: 0, max_count: 3, ordered: true}
+    mention_refs:
+      - {label: Picture, ports: [refs]}
+      - {label: Video, ports: [video_refs]}
+      - {label: Audio, ports: [audio_refs]}
+  - id: minimax_h3_turbo.text_to_video
+    version: 1
+    label: "MiniMax H3 Turbo · ComfyUI"
+    model: minimax-h3-turbo
+    aliases: []
+    dialect: minimax_h3_keyed
+    identity_from_reference: false
+    timed: true
+    max_chars: 7000
+    inputs: []
+    mention_refs: []
+  - id: minimax_h3_turbo_hq.reference_to_video
+    version: 1
+    label: "MiniMax H3 Reference HQ · Two-Stage · ComfyUI"
+    model: minimax-h3-turbo-hq
+    aliases: []
+    dialect: minimax_h3_keyed
+    identity_from_reference: true
+    timed: true
+    max_chars: 7000
+    inputs:
+      - {name: refs, type: image, role: reference_image, min_count: 0, max_count: 6, ordered: true}
+      - {name: video_refs, type: video, role: reference_video, min_count: 0, max_count: 3, ordered: true, guidance: [camera_motion]}
+      - {name: audio_refs, type: audio, role: reference_audio, min_count: 0, max_count: 3, ordered: true}
+    mention_refs:
+      - {label: Picture, ports: [refs]}
+      - {label: Video, ports: [video_refs]}
+      - {label: Audio, ports: [audio_refs]}

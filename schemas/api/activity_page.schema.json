@@ -1,0 +1,201 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "activity_page",
+  "description": "Decisions people made, newest first",
+  "method": "GET",
+  "path": "/api/projects/{project}/activity",
+  "query": [
+    "type",
+    "actor",
+    "cursor",
+    "limit"
+  ],
+  "request": null,
+  "response": {
+    "type": "object",
+    "properties": {
+      "items": {
+        "type": "array",
+        "items": {
+          "$ref": "#/$defs/activity_entry"
+        }
+      },
+      "total": {
+        "type": [
+          "integer",
+          "null"
+        ]
+      },
+      "more_available": {
+        "type": "boolean"
+      },
+      "next_cursor": {
+        "type": [
+          "string",
+          "null"
+        ]
+      }
+    },
+    "required": [
+      "items",
+      "total",
+      "more_available",
+      "next_cursor"
+    ],
+    "additionalProperties": false,
+    "description": "One page. Pass next_cursor back as `cursor` for the next; null when there is no more."
+  },
+  "error": {
+    "$ref": "#/$defs/error_body"
+  },
+  "$defs": {
+    "activity_entry": {
+      "type": "object",
+      "properties": {
+        "activity_id": {
+          "type": "string"
+        },
+        "project_id": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string",
+          "enum": [
+            "review_approve",
+            "review_reject",
+            "adopt_candidate",
+            "supersede",
+            "withdraw",
+            "approve_canon",
+            "approve_reference",
+            "raise_proposal",
+            "decline_proposal",
+            "withdraw_proposal"
+          ]
+        },
+        "actor": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "at": {
+          "type": "integer"
+        },
+        "take_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "order_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "moment_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "medium": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/medium"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "revision": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "proposal_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "asset_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "notes": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "required": [
+        "activity_id",
+        "project_id",
+        "type",
+        "actor",
+        "at",
+        "take_id",
+        "order_id",
+        "moment_id",
+        "medium",
+        "revision",
+        "proposal_id",
+        "asset_id",
+        "notes"
+      ],
+      "additionalProperties": false
+    },
+    "error_body": {
+      "type": "object",
+      "properties": {
+        "error": {
+          "type": "object",
+          "properties": {
+            "code": {
+              "type": "string"
+            },
+            "cause": {
+              "type": "string"
+            },
+            "next_step": {
+              "type": "string"
+            },
+            "retryable": {
+              "type": "boolean"
+            },
+            "details": {
+              "type": "object"
+            }
+          },
+          "required": [
+            "code",
+            "cause"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "error"
+      ],
+      "additionalProperties": false,
+      "description": "Every refusal: 401/403 (auth), 404, 409 (changed since read; details.current), 413, 422, 429, 5xx."
+    },
+    "medium": {
+      "description": "What one work order produces. The medium decides the default lease length.",
+      "type": "string",
+      "enum": [
+        "panel_image",
+        "shot_video",
+        "dialogue_audio",
+        "text"
+      ]
+    }
+  }
+}

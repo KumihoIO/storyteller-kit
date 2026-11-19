@@ -1,0 +1,231 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "revision_detail",
+  "description": "One revision with field-level changes and its consequences",
+  "method": "GET",
+  "path": "/api/projects/{project}/canon/revisions/{revision}",
+  "query": [],
+  "request": null,
+  "response": {
+    "type": "object",
+    "properties": {
+      "revision": {
+        "type": "string"
+      },
+      "number": {
+        "type": "integer"
+      },
+      "kind": {
+        "type": "string",
+        "enum": [
+          "approval",
+          "restore"
+        ]
+      },
+      "change": {
+        "anyOf": [
+          {
+            "$ref": "#/$defs/canon_change"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "approved_at": {
+        "type": "integer"
+      },
+      "approved_by": {
+        "type": "string"
+      },
+      "summary": {
+        "type": "string"
+      },
+      "proposal_ids": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      },
+      "staled_take_ids": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      },
+      "staled_known": {
+        "type": "boolean",
+        "description": "False when staleness could not be attributed: staled_take_ids then means unknown."
+      },
+      "changes": {
+        "type": "array",
+        "items": {
+          "$ref": "#/$defs/field_change"
+        }
+      },
+      "changes_complete": {
+        "type": "boolean"
+      },
+      "reissued_order_ids": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      },
+      "untouched_take_ids": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      },
+      "proposal_id": {
+        "type": [
+          "string",
+          "null"
+        ]
+      }
+    },
+    "required": [
+      "revision",
+      "number",
+      "kind",
+      "change",
+      "approved_at",
+      "approved_by",
+      "summary",
+      "proposal_ids",
+      "staled_take_ids",
+      "staled_known",
+      "changes",
+      "changes_complete",
+      "reissued_order_ids",
+      "untouched_take_ids",
+      "proposal_id"
+    ],
+    "additionalProperties": false
+  },
+  "error": {
+    "$ref": "#/$defs/error_body"
+  },
+  "$defs": {
+    "canon_change": {
+      "description": "One approval that moved Canon from one revision to the next. The ordered list of changes is the history every revision-aware operation reads. The document has no version field of its own.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "from_revision",
+        "to_revision",
+        "changed_domains"
+      ],
+      "properties": {
+        "from_revision": {
+          "type": "string",
+          "description": "The Canon revision before the approval."
+        },
+        "to_revision": {
+          "type": "string",
+          "description": "The Canon revision after the approval."
+        },
+        "changed_domains": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "uniqueItems": true,
+          "default": [],
+          "description": "story-core node keys (bare kind/id, e.g. character/rhea) whose content changed in the narrative or production domain, the union of compare_story_revisions changed_nodes over both. Order is not significant; no entry repeats."
+        }
+      },
+      "$comment": "A list of changes must chain (each from_revision equals the previous to_revision, no revision repeats). That is a property of the list and cannot be expressed here; operations refuse a broken chain with canon_history_gap."
+    },
+    "canon_value": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "error_body": {
+      "type": "object",
+      "properties": {
+        "error": {
+          "type": "object",
+          "properties": {
+            "code": {
+              "type": "string"
+            },
+            "cause": {
+              "type": "string"
+            },
+            "next_step": {
+              "type": "string"
+            },
+            "retryable": {
+              "type": "boolean"
+            },
+            "details": {
+              "type": "object"
+            }
+          },
+          "required": [
+            "code",
+            "cause"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "error"
+      ],
+      "additionalProperties": false,
+      "description": "Every refusal: 401/403 (auth), 404, 409 (changed since read; details.current), 413, 422, 429, 5xx."
+    },
+    "field_change": {
+      "type": "object",
+      "properties": {
+        "node": {
+          "type": "string"
+        },
+        "node_title": {
+          "type": "string"
+        },
+        "field": {
+          "type": "string"
+        },
+        "op": {
+          "type": "string",
+          "enum": [
+            "added",
+            "changed",
+            "removed"
+          ]
+        },
+        "before": {
+          "$ref": "#/$defs/canon_value"
+        },
+        "after": {
+          "$ref": "#/$defs/canon_value"
+        }
+      },
+      "required": [
+        "node",
+        "node_title",
+        "field",
+        "op",
+        "before",
+        "after"
+      ],
+      "additionalProperties": false,
+      "description": "One field of one story node a revision changed; node keys as the ledger's depends_on."
+    }
+  }
+}

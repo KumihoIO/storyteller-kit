@@ -1,0 +1,56 @@
+# Model profiles for provider family 'gemini_omni'.
+# Baseline profiles, first extracted from the 9miho provider manifests.
+# Raise `version` with any edit that can change a rendered prompt (schemas/README.md).
+provider: gemini_omni
+profiles:
+  - id: gemini_omni.first_last_to_video
+    version: 1
+    label: "Gemini Omni 1.1 Flash"
+    model: gemini-omni-flash
+    aliases: []
+    dialect: cinematic_prose
+    identity_from_reference: false
+    timed: false
+    max_chars: 2000
+    inputs:
+      - {name: image, type: image, role: first_frame, min_count: 1, max_count: 1, ordered: false}
+      - {name: last_frame, type: image, role: last_frame, min_count: 1, max_count: 1, ordered: false}
+    mention_refs: []
+  - id: gemini_omni.text_to_video
+    version: 1
+    label: "Gemini Omni 1.1 Flash"
+    model: gemini-omni-flash
+    aliases: []
+    dialect: cinematic_prose
+    identity_from_reference: false
+    timed: false
+    max_chars: null
+    inputs:
+      - {name: image, type: image, role: reference_image, min_count: 0, max_count: 3, ordered: false}
+      - {name: video_refs, type: video, role: reference_video, min_count: 0, max_count: 3, ordered: true, guidance: [camera_motion]}
+    mention_refs:
+      - {label: Video, ports: [video_refs]}
+  - id: gemini_omni.video_edit
+    version: 1
+    label: "Gemini Omni 1.1 Flash"
+    model: gemini-omni-flash
+    aliases: []
+    dialect: cinematic_prose
+    identity_from_reference: false
+    timed: false
+    max_chars: null
+    inputs:
+      - {name: video, type: video, role: generic, min_count: 1, max_count: 1, ordered: false}
+    mention_refs: []
+  - id: gemini_omni.video_extend
+    version: 1
+    label: "Gemini Omni 1.1 Flash"
+    model: gemini-omni-flash
+    aliases: []
+    dialect: cinematic_prose
+    identity_from_reference: false
+    timed: false
+    max_chars: null
+    inputs:
+      - {name: video, type: video, role: generic, min_count: 0, max_count: 1, ordered: false}
+    mention_refs: []

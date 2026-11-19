@@ -1,0 +1,81 @@
+{
+  "analysis": {
+    "width": 320,
+    "max_seconds": 0
+  },
+  "format": {
+    "duration_tolerance_s": 0.75,
+    "frames_tolerance": 1,
+    "fps_tolerance": 0.05,
+    "silence_mean_db": -50.0,
+    "silence_max_db": -35.0,
+    "quiet_mean_db": -38.0
+  },
+  "motion": {
+    "default_region": "upper_third",
+    "whole_p95_flag": 2.0,
+    "region_residual_p95_flag": 1.0
+  },
+  "camera": {
+    "min_inlier_ratio": 0.35,
+    "min_usable_fraction": 0.3,
+    "zoom_window_s": 1.0,
+    "zoom_in_total_flag": 0.4,
+    "zoom_out_total_flag": 0.11,
+    "pan_total_flag": 0.3,
+    "tilt_total_flag": 0.45,
+    "roll_total_flag_deg": 10.0,
+    "expected_move_min": 0.08,
+    "default_expected_move": "static",
+    "move_keywords": [
+      ["static", ["static", "locked-off", "locked off", "fixed camera", "tripod", "no camera movement"]],
+      ["push_in", ["push-in", "push in", "pushes in", "dolly in", "dollies in", "zoom in", "zooms in", "creep in", "creeps in", "moves in"]],
+      ["pull_back", ["pull-back", "pull back", "pulls back", "pull out", "pulls out", "zoom out", "zooms out", "dolly out", "dollies out", "dollying back", "dolly back", "dollies back"]],
+      ["pan", ["pan ", "pans", "panning", "whip pan"]],
+      ["tilt", ["tilt", "tilts", "tilting"]],
+      ["crane", ["crane", "boom", "jib", "pedestal", "descending", "rising"]],
+      ["track", ["tracking", "track ", "trucking", "moving sideways", "follows", "following", "steadicam", "leading"]],
+      ["orbit", ["orbit", "orbits", "arc ", "arcs", "circling"]],
+      ["handheld", ["handheld", "hand-held", "shaky"]]
+    ],
+    "allowed_components": {
+      "static": [],
+      "push_in": ["zoom_in"],
+      "pull_back": ["zoom_out", "zoom_in"],
+      "pan": ["pan"],
+      "tilt": ["tilt"],
+      "crane": ["tilt", "zoom_in", "zoom_out"],
+      "track": ["pan", "tilt", "zoom_in", "zoom_out"],
+      "orbit": ["pan", "zoom_in", "zoom_out", "roll"],
+      "handheld": ["pan", "tilt", "roll"]
+    },
+    "required_components": {
+      "push_in": ["zoom_in"],
+      "pan": ["pan"],
+      "tilt": ["tilt"],
+      "crane": ["tilt"]
+    },
+    "vertical_up_words": ["tilt up", "upward tilt", "tilts up", "crane up", "cranes up", "rising", "rises", "boom up", "pedestal up"],
+    "vertical_down_words": ["tilt down", "downward tilt", "tilts down", "crane down", "cranes down", "descending", "descends", "boom down", "pedestal down"]
+  },
+  "cuts": {
+    "hard_hist_min": 0.25,
+    "hard_ratio_min": 6.0,
+    "run_ratio_min": 4.0,
+    "window_frames": 6,
+    "dissolve_min_pairs": 3,
+    "dissolve_unexplained_per_motion": 0.8,
+    "dissolve_hist_far_min": 0.15,
+    "transition_min_pairs": 2,
+    "transition_hist_far_min": 0.35
+  },
+  "frames": {
+    "even_count": 8,
+    "max_width": 1280,
+    "sheet_columns": 4,
+    "sheet_thumb_width": 400,
+    "jpeg_quality": 88,
+    "min_gap_s": 0.08,
+    "reference_max_side": 1024
+  }
+}

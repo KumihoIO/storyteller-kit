@@ -1,0 +1,72 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "list_open_work",
+  "description": "The list_open_work tool contract of 9miho-storyteller's MCP server (generated).",
+  "profiles": [
+    "granular",
+    "guided"
+  ],
+  "annotations": {
+    "readOnlyHint": true,
+    "destructiveHint": false,
+    "idempotentHint": true,
+    "openWorldHint": false
+  },
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "project_id": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 200,
+        "pattern": "^[^\\u0000-\\u001f]+$"
+      },
+      "cursor": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "maxLength": 32
+      },
+      "limit": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 100
+      }
+    },
+    "required": [],
+    "additionalProperties": false
+  },
+  "outputSchema": {
+    "type": "object",
+    "properties": {
+      "inbox": {
+        "type": "array",
+        "items": {
+          "type": "object"
+        }
+      },
+      "total": {
+        "type": [
+          "integer",
+          "null"
+        ]
+      },
+      "more_available": {
+        "type": "boolean"
+      },
+      "next_cursor": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "maxLength": 32
+      }
+    },
+    "required": [
+      "inbox",
+      "more_available"
+    ],
+    "additionalProperties": false
+  }
+}

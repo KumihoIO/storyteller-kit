@@ -1,0 +1,16 @@
+{
+  "name": "storyteller",
+  "description": "Host skills for 9miho Storyteller. The skills are pointers; the guidance is served by the hosted Storyteller MCP server.",
+  "owner": {
+    "name": "Kumiho",
+    "url": "https://kumiho.io"
+  },
+  "plugins": [
+    {
+      "name": "storyteller",
+      "source": "./",
+      "description": "Work on a team's story with 9miho Storyteller over MCP.",
+      "version": "0.1.0"
+    }
+  ]
+}

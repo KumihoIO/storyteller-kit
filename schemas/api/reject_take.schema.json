@@ -1,0 +1,104 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "reject_take",
+  "description": "Person decision: POST /api/projects/{project}/takes/{order}/reject",
+  "method": "POST",
+  "path": "/api/projects/{project}/takes/{order}/reject",
+  "query": [],
+  "request": {
+    "type": "object",
+    "properties": {
+      "notes": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 4000
+      }
+    },
+    "required": [
+      "notes"
+    ],
+    "additionalProperties": false
+  },
+  "response": {
+    "type": "object",
+    "properties": {
+      "ok": {
+        "const": true
+      },
+      "applied": {
+        "const": true
+      },
+      "take": {
+        "type": "object",
+        "additionalProperties": true
+      },
+      "reissued_as": {
+        "type": [
+          "string",
+          "null"
+        ]
+      },
+      "stale_take_ids": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      },
+      "requeued": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      }
+    },
+    "required": [
+      "ok",
+      "applied",
+      "take",
+      "reissued_as",
+      "stale_take_ids",
+      "requeued"
+    ],
+    "additionalProperties": false
+  },
+  "error": {
+    "$ref": "#/$defs/error_body"
+  },
+  "$defs": {
+    "error_body": {
+      "type": "object",
+      "properties": {
+        "error": {
+          "type": "object",
+          "properties": {
+            "code": {
+              "type": "string"
+            },
+            "cause": {
+              "type": "string"
+            },
+            "next_step": {
+              "type": "string"
+            },
+            "retryable": {
+              "type": "boolean"
+            },
+            "details": {
+              "type": "object"
+            }
+          },
+          "required": [
+            "code",
+            "cause"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "error"
+      ],
+      "additionalProperties": false,
+      "description": "Every refusal: 401/403 (auth), 404, 409 (changed since read; details.current), 413, 422, 429, 5xx."
+    }
+  }
+}

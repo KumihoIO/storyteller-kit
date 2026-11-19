@@ -1,0 +1,158 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "resolve_proposal",
+  "description": "Person edit: POST /api/projects/{project}/proposals/{proposal}/resolve",
+  "method": "POST",
+  "path": "/api/projects/{project}/proposals/{proposal}/resolve",
+  "query": [],
+  "request": null,
+  "response": {
+    "type": "object",
+    "properties": {
+      "ok": {
+        "const": true
+      },
+      "proposal_id": {
+        "type": "string"
+      },
+      "status": {
+        "type": "string",
+        "enum": [
+          "applied",
+          "conflicted",
+          "withdrawn",
+          "approved",
+          "discarded"
+        ]
+      },
+      "draft_seq": {
+        "type": "integer"
+      },
+      "applied_seq": {
+        "type": [
+          "integer",
+          "null"
+        ]
+      },
+      "repeated": {
+        "type": "boolean"
+      },
+      "conflicts": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      },
+      "conflict_parts": {
+        "type": "array",
+        "items": {
+          "$ref": "#/$defs/conflict_part"
+        }
+      }
+    },
+    "required": [
+      "ok",
+      "proposal_id",
+      "status",
+      "draft_seq",
+      "applied_seq",
+      "repeated",
+      "conflicts",
+      "conflict_parts"
+    ],
+    "additionalProperties": false,
+    "description": "applied: the draft took it as draft_seq; conflicted: parked for its author, the parts named."
+  },
+  "error": {
+    "$ref": "#/$defs/error_body"
+  },
+  "$defs": {
+    "conflict_part": {
+      "type": "object",
+      "properties": {
+        "part": {
+          "type": "string"
+        },
+        "collection": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "field": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "kind": {
+          "type": "string",
+          "enum": [
+            "changed",
+            "reference",
+            "invalid",
+            "order",
+            "other"
+          ]
+        },
+        "detail": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "required": [
+        "part",
+        "collection",
+        "id",
+        "field",
+        "kind",
+        "detail"
+      ],
+      "additionalProperties": false,
+      "description": "One part that kept a proposal from applying: changed (someone else changed the field since the author read it), reference (the result would point at something that is not there; field names the row's field it comes from), invalid (the merged row does not validate), order (two different reorders of one list)."
+    },
+    "error_body": {
+      "type": "object",
+      "properties": {
+        "error": {
+          "type": "object",
+          "properties": {
+            "code": {
+              "type": "string"
+            },
+            "cause": {
+              "type": "string"
+            },
+            "next_step": {
+              "type": "string"
+            },
+            "retryable": {
+              "type": "boolean"
+            },
+            "details": {
+              "type": "object"
+            }
+          },
+          "required": [
+            "code",
+            "cause"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "error"
+      ],
+      "additionalProperties": false,
+      "description": "Every refusal: 401/403 (auth), 404, 409 (changed since read; details.current), 413, 422, 429, 5xx."
+    }
+  }
+}
